@@ -324,194 +324,249 @@ void Menu::check_button(void){
 			print_menu();
 		}		
 		switch (navigation_mode) {
-		case 4:
-			if (set_type==1){
-				switch(pick[pick_pos[cursor_pos]].mode){
-					case 1:
-							if (pick[pick_pos[cursor_pos]].child!=0){
-								active=0;
-								reset_value();
-								
-								Panel=pick[pick_pos[cursor_pos]].child;
-								event=1;
-								Panel->active=1;
+			case 4:
+				if (set_type==1){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								if (pick[pick_pos[cursor_pos]].child!=0){
+									active=0;
+									reset_value();
+									
+									Panel=pick[pick_pos[cursor_pos]].child;
+									event=1;
+									Panel->active=1;
 
+									
+								}
 								
-							}
-							
-							/* Serial.print("child adress: ");
-							Serial.println(int(pick[pick_pos[cursor_pos]].child));
-							Serial.print("Panel adress: ");
-							Serial.println(int(Panel)); */
-							break;
-					case 2:
-							pick[pick_pos[cursor_pos]].state=!pick[pick_pos[cursor_pos]].state;
-							event=1;
-							break;
-					case 3:
-							break;		
-				}
-				Panel->print_menu();				
-			}
-			if (set_type==2){
-			switch(pick[pick_pos[cursor_pos]].mode){
-				case 1:
-						break;
-				case 2:
-						break;
-				case 3:
-						setup_mode=!setup_mode;
-						//Serial.println(setup_mode);	
-						if (setup_mode==1){
-							//new_value=pick[pick_pos[cursor_pos]].value;
-						}
-						else {
-							pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
-							//pick[pick_pos[cursor_pos]].new_value=0;
-							event=1;
-						}
-						break;		
-			}			
-			print_menu();				
-		}
-		break;
-		case 5:
-			if (set_type==1){
-				switch(pick[pick_pos[cursor_pos]].mode){
-					case 1:
-							break;
-					case 2:
-							pick[pick_pos[cursor_pos]].state=!pick[pick_pos[cursor_pos]].state;
-							event=1;
-							break;
-					case 3:
-							break;		
-				}
-				Panel->print_menu();				
-			}
-			if (set_type==2){
-				switch(pick[pick_pos[cursor_pos]].mode){
-					case 1:
-							break;
-					case 2:
-							break;
-					case 3:
-						setup_mode=!setup_mode;
-						//Serial.println(setup_mode);	
-						if (setup_mode==1){
-							//new_value=pick[pick_pos[cursor_pos]].value;
-						}
-						else {
-							pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
-							//pick[pick_pos[cursor_pos]].new_value=0;
-							event=1;
-						}
-						break;		
-			}			
-			print_menu();				
-		}
-			if (next_type==1){
-				switch(pick[pick_pos[cursor_pos]].mode){
-					case 1:
-							if (pick[pick_pos[cursor_pos]].child!=0){
-								active=0;
-								reset_value();
-								
-								Panel=pick[pick_pos[cursor_pos]].child;
+								/* Serial.print("child adress: ");
+								Serial.println(int(pick[pick_pos[cursor_pos]].child));
+								Serial.print("Panel adress: ");
+								Serial.println(int(Panel)); */
+								break;
+						case 2:
+								pick[pick_pos[cursor_pos]].state=!pick[pick_pos[cursor_pos]].state;
 								event=1;
-								Panel->active=1;
-
-								
-							}
-							
-							/* Serial.print("child adress: ");
-							Serial.println(int(pick[pick_pos[cursor_pos]].child));
-							Serial.print("Panel adress: ");
-							Serial.println(int(Panel)); */
-							break;
-					case 2:
-							pick[pick_pos[cursor_pos]].state=!pick[pick_pos[cursor_pos]].state;
-							event=1;
-							break;
-					case 3:
-							break;		
+								break;
+						case 3:
+								break;		
+					}
+					Panel->print_menu();				
 				}
-				Panel->print_menu();				
+				if (set_type==2){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								break;
+						case 2:
+								break;
+						case 3:
+								setup_mode=!setup_mode;
+								//Serial.println(setup_mode);	
+								if (setup_mode==1){
+									//new_value=pick[pick_pos[cursor_pos]].value;
+								}
+								else {
+									pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
+									//pick[pick_pos[cursor_pos]].new_value=0;
+									event=1;
+								}
+								break;		
+					}			
+				print_menu();				
 			}
-			if (next_type==2){
-				switch(pick[pick_pos[cursor_pos]].mode){
-					case 1:
-							break;
-					case 2:
-							break;
-					case 3:
-						setup_mode=!setup_mode;
-						//Serial.println(setup_mode);	
-						if (setup_mode==1){
-							//new_value=pick[pick_pos[cursor_pos]].value;
-						}
-						else {
-							pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
-							//pick[pick_pos[cursor_pos]].new_value=0;
-							event=1;
-						}
-						break;		
-			}			
-			print_menu();				
-		}
-				
-		break;
-		}
-		if (back_type==1){
-			switch(pick[pick_pos[cursor_pos]].mode){
-				case 1:
-						if (pick[pick_pos[cursor_pos]].parent!=0){
-							active=0;
-							reset_value();
-							setup_mode=0;
-							Panel=pick[pick_pos[cursor_pos]].parent;
-							Panel->active=1;
-							//event=1;
-						}
-						break;
-				case 2:
-						if (pick[pick_pos[cursor_pos]].parent!=0){
-							active=0;
-							reset_value();
-							setup_mode=0;
-							Panel=pick[pick_pos[cursor_pos]].parent;
-							Panel->active=1;
-							//event=1;
-						}
-						break;
-				case 3:
-						if (pick[pick_pos[cursor_pos]].parent!=0){
-							active=0;
-							reset_value();
-							setup_mode=0;
-							Panel=pick[pick_pos[cursor_pos]].parent;
-							Panel->active=1;
-							//event=1;
-						}
-						break;		
-			}			
-			Panel->print_menu();				
-		}
-		if (back_type==2){	
-			switch(pick[pick_pos[cursor_pos]].mode){
-				case 1:						
-						break;
-				case 2:
-						break;
-				case 3:
-						
-						pick[pick_pos[cursor_pos]].value=0;
-						pick[pick_pos[cursor_pos]].new_value=0;
-						event=1;
-						break;		
-			}			
-			Panel->print_menu();				
-		}
+				if (back_type==1){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									//event=1;
+								}
+								break;
+						case 2:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									//event=1;
+								}
+								break;
+						case 3:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									//event=1;
+								}
+								break;		
+					}			
+					Panel->print_menu();				
+				}
+				if (back_type==2){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:						
+								break;
+						case 2:
+								break;
+						case 3:
+								break;		
+					}			
+					Panel->print_menu();				
+				}
+
+			break;
+			case 5:
+				if (set_type==1){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								break;
+						case 2:
+								pick[pick_pos[cursor_pos]].state=!pick[pick_pos[cursor_pos]].state;
+								event=1;
+								break;
+						case 3:
+								setup_mode=!setup_mode;
+								//Serial.println(setup_mode);	
+								if (setup_mode==1){
+									//new_value=pick[pick_pos[cursor_pos]].value;
+								}
+								else {
+									pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
+									//pick[pick_pos[cursor_pos]].new_value=0;
+									event=1;
+								}
+								break;			
+					}
+					Panel->print_menu();				
+				}
+				if (set_type==2){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								break;
+						case 2:
+								break;
+						case 3:
+								reset_value();
+								event=1;
+								break;		
+				}			
+				print_menu();				
+			}
+				if (next_type==1){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								if (pick[pick_pos[cursor_pos]].child!=0){
+									active=0;
+									//reset_value();
+									Panel=pick[pick_pos[cursor_pos]].child;
+									event=1;
+									Panel->active=1;
+								}
+								break;
+						case 2:
+								break;
+						case 3:
+								break;		
+					}
+					Panel->print_menu();				
+				}
+				if (next_type==2){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								if (pick[pick_pos[cursor_pos]].child!=0){
+									active=0;
+									//reset_value();
+									Panel=pick[pick_pos[cursor_pos]].child;
+									event=1;
+									Panel->active=1;
+								}
+								break;
+						case 2:
+								break;
+						case 3:
+								break;		
+					}			
+					Panel->print_menu();				
+			}
+				if (back_type==1){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									//reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									event=1;
+								}
+								break;
+						case 2:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									//reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									event=1;
+								}
+								break;
+						case 3:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									//reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									event=1;
+								}
+								break;		
+					}			
+					Panel->print_menu();				
+				}
+				if (back_type==2){
+					switch(pick[pick_pos[cursor_pos]].mode){
+						case 1:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									//reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									event=1;
+								}
+								break;
+						case 2:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									//reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									event=1;
+								}
+								break;
+						case 3:
+								if (pick[pick_pos[cursor_pos]].parent!=0){
+									active=0;
+									//reset_value();
+									setup_mode=0;
+									Panel=pick[pick_pos[cursor_pos]].parent;
+									Panel->active=1;
+									event=1;
+								}
+								break;				
+					}			
+					Panel->print_menu();				
+				}
+			break;
+		};
 };
 void Menu::disable_all(void){
 	for (int i=0;i<n_pickers;i++){
