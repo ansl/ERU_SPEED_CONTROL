@@ -95,6 +95,16 @@ class Picker {
    //private:
 };
 
+// class Status_screen{
+// 	public:
+// 		Status_screen();
+// 		float Temp;
+// 		float Temp_max;
+// 		bool Temp_alarm;
+// 		int rpm_actual;
+// 		int rpm_target;
+		
+// };
 
 int count_loop(int val, int max_val, int min_val);
 void init_array(int arr[],int size,int res);

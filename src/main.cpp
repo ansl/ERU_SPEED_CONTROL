@@ -39,6 +39,7 @@
 #include <Wire.h>
 #include <PWM_READ.h>
 #include <LCD_MENU.h>
+#include <PID.h>
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //DEFINES
 
@@ -54,21 +55,42 @@
 #define T_SENS 14
 #define COOLANT 15
 
-//LCD
-#define max_char 20
-#define max_row 4
-LiquidCrystal_I2C lcd(0x27, max_char, max_row);
-uint8_t next[8] = { 0x0, 0x0, 0x4, 0x2, 0x1f, 0x2, 0x4, 0x0};
-uint8_t lght[8] = {0b00100, 0b10101, 0b01110, 0b11111, 0b01110, 0b10101, 0b00100, 0b00000};
+// //LCD #############################################################
+// #define max_char 20
+// #define max_row 4
+// LiquidCrystal_I2C lcd(0x27, max_char, max_row);
+// uint8_t next[8] = {0x0, 0x0, 0x4, 0x2, 0x1f, 0x2, 0x4, 0x0};
+// uint8_t lght[8] = {0b00100, 0b10101, 0b01110, 0b11111, 0b01110, 0b10101, 0b00100, 0b00000};
 
-//MENU#############################################################
-Menu M1(2,0,&lcd,UP,DOWN,SET,BACK,NEXT);
-Menu M20(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 
+// PID #############################################################
+int maxPWM=4000;
+int minPWM=1900;
+PID PID1(0.0001, 1 ,0, 1800, minPWM, maxPWM, 100);
+
+// //MENU#############################################################
+// Menu M1(3,0,&lcd,UP,DOWN,SET,BACK,NEXT);
+// Menu M21(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+// Menu M211(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+// Menu M212(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+// Menu M213(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+// Menu M22(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 //Variables#############################################################
+
+volatile int n=0;
+volatile int n0=0;
+volatile int nT=0;
+volatile int nP=0;
+volatile int p=7;
+
+volatile long v=0;
+volatile long v_target=0;
 volatile long pwm_target=0;
 
-int n=0;
+float T=1024 / 16000000.0;//0.000064;	//6.4e-5s
+float buff=255;
+float Tc=T*(buff+1);
+
 void setup() {
   // put your setup code here, to run once:
 
@@ -127,78 +149,166 @@ void setup() {
 	OCR1A=40000;				//40000=20ms
 	OCR1B=1900;					//rango de 2000 a 4000 =>2000=1ms 4000=2ms
 
-	// //////////////////////////////////////////////////////////////////////////////////////
-	// //inicializo timer2/overflow
-
-	// TCCR2A=0;					//Inicializo los control registers del timer2
-	// TCCR2B=0;
-	// TIMSK2=0;
-
-	// TCCR2B |=(1 << CS20);		//Seteo el prescaling en 1024
-	// TCCR2B |=(1 << CS21);		//Seteo el prescaling en 1024
-	// TCCR2B |=(1 << CS22);		//Seteo el prescaling en 1024
-	// TIMSK2 |=(1 << TOIE2);		//Seteo como se dispara el interrupt(overflow)
-	// //////////////////////////////////////////////////////////////////////////////////////
-	// //ENABLE EXTERNAL INTERRUPT
-
-	// //MAGNETIC ENCODER
-	// EIMSK |= (1 << INT0);		// Enable external interrupt INT0 #pin2
-	// EICRA |= (1 << ISC01);		// Trigger INT0 on falling edge
-
-	//GRBL PWM INPUT
-	//PWM_READ GRBL_PWM(10000);
 	//////////////////////////////////////////////////////////////////////////////////////
 	//inicializo timer2/overflow
 
+	TCCR2A=0;					//Inicializo los control registers del timer2
+	TCCR2B=0;
+	TIMSK2=0;
+
+	TCCR2B |=(1 << CS20);		//Seteo el prescaling en 1024
+	TCCR2B |=(1 << CS21);		//Seteo el prescaling en 1024
+	TCCR2B |=(1 << CS22);		//Seteo el prescaling en 1024
+	TIMSK2 |=(1 << TOIE2);		//Seteo como se dispara el interrupt(overflow)
+	// //////////////////////////////////////////////////////////////////////////////////////
+	// //ENABLE EXTERNAL INTERRUPT
+
+	//MAGNETIC ENCODER
+	EIMSK |= (1 << INT0);		// Enable external interrupt INT0 #pin2
+	EICRA |= (1 << ISC01);		// Trigger INT0 on falling edge
+
+	// //GRBL PWM INPUT
+	// //PWM_READ GRBL_PWM(10000);
+
 	sei();						// Enable global interrupts
 
-  //LCD MENU definitions    
-    lcd.init();  //initialize the lcd
-    lcd.clear();
-    lcd.backlight();  //open the backlight
-    lcd.createChar(0, next);
-    lcd.setCursor(0,0);
-    lcd.print("ERU Project 4.0");
-    lcd.setCursor(0,1);
-    lcd.print("AntS 2021");
-    lcd.createChar(0,next);
-    delay(2000);
+//   //LCD MENU definitions    
+//     lcd.init();  //initialize the lcd
+//     lcd.clear();
+//     lcd.backlight();  //open the backlight
+//     lcd.createChar(0, next);
+//     lcd.setCursor(0,0);
+//     lcd.print("ERU Project 4.0");
+//     lcd.setCursor(0,1);
+//     lcd.print("AntS 2021");
+//     lcd.createChar(0,next);
+//     delay(2000);
 
-    lcd.clear();
+//     lcd.clear();
 
-  //Define Menu Pannels
-    M1.pick[0].picker_name="LIGHT";
-    M1.pick[0].mode=2;
-    M1.pick[1].picker_name="SPINDLE";
-    M1.pick[1].mode=1;
-    //M1.print_menu();
+//   //Define Menu Pannels
+//     M1.pick[0].picker_name="LIGHT";
+//     M1.pick[0].mode=2;
+//     M1.pick[1].picker_name="SPINDLE";
+//     M1.pick[1].mode=1;
+// 	M1.pick[2].picker_name="CONFIG";
+//     M1.pick[2].mode=1;
+//     //M1.print_menu();
     
-    M20.pick[0].picker_name="THROTLE:";
-    M20.pick[0].mode=3;
-    M20.pick[0].unit="%";
-    M20.pick[0].decimals=0;
-    M20.pick[0].inc_short=1;
-    M20.pick[0].inc_long=10;
-    M20.pick[0].max_value=100;
-    M20.pick[0].min_value=0;
-    M20.header="SPINDLE";
+// 	M21.header="SPINDLE CONTROL";
+//     M21.pick[0].picker_name="PID:";
+//     M21.pick[0].mode=1;
+//     M21.pick[1].picker_name="EXT PWM:";
+//     M21.pick[1].mode=1;
+//     M21.pick[2].picker_name="PWR %:";
+//     M21.pick[2].mode=1;
 
-    //Define menu interconnections
-    M1.pick[1].child=&M20;
-    M20.pick[0].parent=&M1;
+// 	M211.header="SPINDLE PID";
+//     M211.pick[0].picker_name="Target RPM:";
+//     M211.pick[0].mode=3;
+//     M211.pick[0].unit="rpm";
+//     M211.pick[0].decimals=0;
+//     M211.pick[0].inc_short=50;
+//     M211.pick[0].inc_long=500;
+//     M211.pick[0].max_value=50000;
+//     M211.pick[0].min_value=0;
+
+// 	M212.header="EXT PWM";
+//     M212.pick[0].picker_name="PWM LINK:";
+//     M212.pick[0].mode=2;
+//     M212.pick[0].state_string0="DISCONECTED";
+//     M212.pick[0].state_string1="CONNECTED";
+
+// 	M213.header="SPINDLE PWR %:";
+//     M213.pick[0].mode=3;
+//     M213.pick[0].unit="%";
+//     M213.pick[0].decimals=0;
+//     M213.pick[0].inc_short=1;
+//     M213.pick[0].inc_long=10;
+//     M213.pick[0].max_value=100;
+//     M213.pick[0].min_value=0;
     
+// 	M22.header="CONFIG";
+// 	M22.pick[0].picker_name="P";
+// 	M22.pick[0].mode=3;
+// 	M22.pick[0].unit="";
+// 	M22.pick[0].decimals=0;
+// 	M22.pick[0].inc_long=10;
+// 	M22.pick[0].inc_short=1;
+// 	M22.pick[0].min_value=0;
+
+// 	M22.pick[1].picker_name="D";
+// 	M22.pick[1].mode=3;
+// 	M22.pick[1].unit="";
+// 	M22.pick[1].decimals=0;
+// 	M22.pick[1].inc_long=10;
+// 	M22.pick[1].inc_short=1;
+// 	M22.pick[1].min_value=0;
+
+// 	M22.pick[2].picker_name="I";
+// 	M22.pick[2].mode=3;
+// 	M22.pick[2].unit="";
+// 	M22.pick[2].decimals=0;
+// 	M22.pick[2].inc_long=10;
+// 	M22.pick[2].inc_short=1;
+// 	M22.pick[2].min_value=0;
+
+// 	M22.pick[3].picker_name="Temp max";
+// 	M22.pick[3].value=70.0;
+// 	M22.pick[3].mode=3;
+// 	M22.pick[3].unit="ºC";
+// 	M22.pick[3].decimals=1;
+// 	M22.pick[3].inc_long=10;
+// 	M22.pick[3].inc_short=1;
+// 	M22.pick[3].max_value=100;
+// 	M22.pick[3].min_value=0;
+
+//     //Define menu interconnections
+//     M1.pick[1].child=&M21;
+// 	M1.pick[2].child=&M22;
+// 	M21.pick[0].child=&M211;
+// 	M21.pick[1].child=&M212;
+// 	M21.pick[2].child=&M213;
+
+//     M21.pick[0].parent=&M1;
+// 	M21.pick[1].parent=&M1;
+// 	M21.pick[2].parent=&M1;
+//     M22.pick[0].parent=&M1;
+// 	M22.pick[1].parent=&M1;
+// 	M22.pick[2].parent=&M1;
+// 	M22.pick[3].parent=&M1;
+
+// 	M211.pick[0].parent=&M21;
+// 	M212.pick[0].parent=&M21;
+// 	M212.pick[0].parent=&M21;	
+
     
     Serial.begin(9600);     //Inicializo el serial print
-    Panel=&M1; //inicializo en panel principal
-    Panel->print_menu();
+    // Panel=&M1; //inicializo en panel principal
+    // Panel->print_menu();
     delay(2000);
+	
+	v_target=2000;
+	Serial.print("start with target speed ");
+	Serial.print(v_target);
+    Serial.println("rmp");
 
 }
 
 void loop() {
-   Panel->check_button();
+//    Panel->check_button();
 
-   pwm_target=int(2200*M20.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
+
+   pwm_target=PID1.Evaluate(v,v_target);
+   Serial.print("T:");
+   Serial.print(v_target);
+   Serial.print("rpm V:");
+   Serial.print(v);
+   Serial.print("rpm PWM:");
+   Serial.print(pwm_target);
+   Serial.println("");
+
+   //pwm_target=int(2200*M21.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
 
 
 }
@@ -210,32 +320,32 @@ void loop() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// ISR(INT0_vect) //interrupt que detecta cada pulso del encoder magnetico
-// 	{
-// 		uint8_t oldSREG = SREG;
+ISR(INT0_vect) //interrupt que detecta cada pulso del encoder magnetico
+	{
+		uint8_t oldSREG = SREG;
 		
-// 		//digitalWrite(13,!digitalRead(13));	// Toggle LED on pin 13
-// 		n=n+1;
+		digitalWrite(13,!digitalRead(13));	// Toggle LED on pin 13
+		n=n+1;
 		
-// 		SREG = oldSREG;
-// 	}
+		SREG = oldSREG;
+	}
 
 ISR(TIMER1_COMPB_vect)//Timer usado para definir el duti cycle del PWM
 	{
 		OCR1B=pwm_target;
 	};
 
-// ISR(TIMER2_OVF_vect) //TImer por overflow usado para calcular en cada periodo de tiempo definido por el OVF el numero de pulsos dado por el encoder magnetico
-// 	{
-// 		if (nT<=10){
-// 			nT++;
-// 			nP=nP+n;
-// 			n=0;
-// 		}
-// 		else{
-// 			v=60*nP/(nT*Tc*p);
-// 			nT=0;
-// 			nP=0;
-// 			n=0;
-// 		}
-// 	};
+ISR(TIMER2_OVF_vect) //TImer por overflow usado para calcular en cada periodo de tiempo definido por el OVF el numero de pulsos dado por el encoder magnetico
+	{
+		if (nT<=10){
+			nT++;
+			nP=nP+n;
+			n=0;
+		}
+		else{
+			v=60*nP/(nT*Tc*p);
+			nT=0;
+			nP=0;
+			n=0;
+		}
+	};
