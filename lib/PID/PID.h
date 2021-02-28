@@ -7,6 +7,7 @@ class PID
 		//void Kd(float n);
 		//void Ki(float n);
 		void SetRangeOut(int min, int max);
+		void Param(float p, float i, float d);
 		long Evaluate(long IN,long TARGET);//esta seria equivalente a RPM
   	private:
   		float _Kp;

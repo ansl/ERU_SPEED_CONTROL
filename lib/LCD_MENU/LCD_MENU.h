@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
+#include <EEPROM.h>
 
 
 class Menu;
@@ -92,6 +93,9 @@ class Picker {
 	  //
       Menu *child; // address of hte Child menu
 	  Menu *parent; // address of hte Parent menu
+	  bool EEPROM_ACTIVE;
+	  int EEPROM_ADDR;
+	  int ref;
    //private:
 };
 

@@ -34,6 +34,11 @@ void PID::SetRangeOut(int min, int max){
     _RNG_OUT_MIN=min;
     _RNG_OUT_MAX=max;
 }
+void PID::Param(float p, float i ,float d){
+    _Kp=p;
+    _Kd=i;
+    _Ki=d;
+}
 long PID::Evaluate(long IN,long TARGET){
     if (_OUT!=_OUT_old){
         if (abs(TARGET-IN) > _ft || TARGET==0){

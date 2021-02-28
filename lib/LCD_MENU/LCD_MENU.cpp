@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
+#include <EEPROM.h>
 
 contact::contact(int pin,int dbounce,int short_pulse,int long_pulse){
 	_t_pulse_start=0;
@@ -80,6 +81,10 @@ Picker::Picker(){
 	  enabled=0;
       child=0;
 	  parent=0;
+	  EEPROM_ACTIVE=0;
+	  EEPROM_ADDR=0;
+	  ref=0;
+
       //Menu Sub_Menu(1);
 };
 
@@ -158,10 +163,10 @@ Menu::Menu(int n_pick, int n_header_lines, LiquidCrystal_I2C *LCD,int up, int do
 void Menu::print_menu(){
 	 lcD->clear();
 	 
-	 /*Serial.print("header_lines: ");
+	 Serial.print("header_lines: ");
 	 Serial.println(header_lines);
 	 Serial.print("cursor_pos: ");
-	 Serial.println(cursor_pos);*/
+	 Serial.println(cursor_pos);
 	 
 	 lcD->setCursor(n_cols-1,header_lines+cursor_pos);
 	 switch (pick[pick_pos[cursor_pos]].mode){
@@ -202,21 +207,22 @@ void Menu::print_menu(){
 	 }
      for (int i=0;i<min(n_rows-header_lines,n_pickers);i++){
 		 
-		  //Serial.print("picker pos: ");
-		  //Serial.println(i);
+		//  Serial.print("picker pos: ");
+		//  Serial.println(i);
 		  
 		 lcD->setCursor(0,i+header_lines);
-		 /*
-		 Serial.print("picker name: ");
-		 Serial.println(pick[pick_pos[i]].picker_name);
-		 Serial.print("ADDRESS: ");
-		 Serial.println(int(Panel));*/
+		 
+		//  Serial.print("picker name: ");
+		//  Serial.println(pick[pick_pos[i]].picker_name);
+		//  Serial.print("ADDRESS: ");
+		//  Serial.println(int(Panel));
 		 
 		 lcD->print(pick[pick_pos[i]].picker_name);
 	 }
 	 if (header_lines>0){
 		lcD->setCursor(0,0);
 		lcD->print(header);
+
 	 }
 	 
 	 
@@ -297,7 +303,7 @@ void Menu::check_button(void){
 		}		
 		if (down_type==1){
 			if(setup_mode==0){
-				if(cursor_pos+header_lines<min(n_pickers,n_rows)-1){
+				if(cursor_pos+header_lines<min(n_pickers+header_lines,n_rows)-1){
 					cursor_pos++;
 				}
 				else if (cursor_pos+header_lines==n_rows-1){
@@ -335,8 +341,6 @@ void Menu::check_button(void){
 									Panel=pick[pick_pos[cursor_pos]].child;
 									event=1;
 									Panel->active=1;
-
-									
 								}
 								
 								/* Serial.print("child adress: ");
@@ -368,6 +372,10 @@ void Menu::check_button(void){
 								else {
 									pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
 									//pick[pick_pos[cursor_pos]].new_value=0;
+									if (pick[pick_pos[cursor_pos]].EEPROM_ACTIVE==1){
+										EEPROM.put(pick[pick_pos[cursor_pos]].EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
+									}
+									pick[pick_pos[cursor_pos]].enabled=1;
 									event=1;
 								}
 								break;		
@@ -439,7 +447,11 @@ void Menu::check_button(void){
 								}
 								else {
 									pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
+									if (pick[pick_pos[cursor_pos]].EEPROM_ACTIVE==1){
+										EEPROM.put(pick[pick_pos[cursor_pos]].EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
+									}
 									//pick[pick_pos[cursor_pos]].new_value=0;
+									pick[pick_pos[cursor_pos]].enabled=1;
 									event=1;
 								}
 								break;			
