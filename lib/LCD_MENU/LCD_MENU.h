@@ -12,7 +12,7 @@ class Picker;
 
 class contact
 { public:
-		contact(int pin,int dbounce,int short_pulse,int long_pulse);
+		contact(int pin,int dbounce,int short_pulse,unsigned long long_pulse);
 		contact(int pin,int dbounce,int short_pulse);
 		int type(void);
 
@@ -23,7 +23,7 @@ class contact
   	int _pin;
   	int _dbounce;
 	int _short_pulse;
-	int _long_pulse;
+	unsigned long _long_pulse;
 	bool _init_pulse;
 };
 

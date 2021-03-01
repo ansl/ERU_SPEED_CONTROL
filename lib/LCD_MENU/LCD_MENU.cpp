@@ -4,7 +4,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <EEPROM.h>
 
-contact::contact(int pin,int dbounce,int short_pulse,int long_pulse){
+contact::contact(int pin,int dbounce,int short_pulse,unsigned long long_pulse){
 	_t_pulse_start=0;
 	_t_long_end=0;
   	_pin=pin;
@@ -96,7 +96,7 @@ Menu::Menu(int n_pick, int n_header_lines, LiquidCrystal_I2C *LCD,int up, int do
 	 header_lines=n_header_lines;
      header="Prueba";
 	 
-	 n_rows=LCD->_rows;//total number of rows of the display  default 2
+	 n_rows=LCD->_numlines;//total number of rows of the display  default 2
 	 n_cols=LCD->_cols;//total number of columns of the display  default 16
 
      pick=new Picker[n_pick];
@@ -132,7 +132,7 @@ Menu::Menu(int n_pick, int n_header_lines, LiquidCrystal_I2C *LCD,int up, int do
 	 header_lines=n_header_lines;
      header="Prueba";
 	 
-	 n_rows=LCD->_rows;//total number of rows of the display  default 2
+	 n_rows=LCD->_numlines;//total number of rows of the display  default 2
 	 n_cols=LCD->_cols;//total number of columns of the display  default 16
 
      pick=new Picker[n_pick];
@@ -172,7 +172,7 @@ void Menu::print_menu(){
 	 switch (pick[pick_pos[cursor_pos]].mode){
 	 case 1:
 		 lcD->setCursor(n_cols-1,header_lines+cursor_pos);
-		 lcD->write(0);
+		 lcD->write(byte(0));
 	 break;
 	 case 2:
 		 if (pick[pick_pos[cursor_pos]].state==0){

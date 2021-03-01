@@ -62,9 +62,11 @@
 
 //LCD #############################################################
 #ifdef LCD_ACTIVE
+	#define I2C_ADDR 0x27
 	#define max_char 20
 	#define max_row 4
-	LiquidCrystal_I2C lcd(0x27, max_char, max_row);
+	LiquidCrystal_I2C lcd(I2C_ADDR,2,1,0,4,5,6,7);
+	//LiquidCrystal_I2C lcd(0x27, max_char, max_row);
 	uint8_t next[8] = {0x0, 0x0, 0x4, 0x2, 0x1f, 0x2, 0x4, 0x0};
 	uint8_t lght[8] = {0b00100, 0b10101, 0b01110, 0b11111, 0b01110, 0b10101, 0b00100, 0b00000};
 #endif // !LCD_ACTIVE
@@ -183,8 +185,11 @@ void setup() {
 
 	sei();						// Enable global interrupts
 	#ifdef LCD_ACTIVE
-		//LCD MENU definitions    
-			lcd.init();  //initialize the lcd
+		//LCD MENU definitions
+			lcd.begin(20, 4);
+			// lcd.setBacklightPin(3,POSITIVE);
+			// lcd.setBacklight(HIGH);
+			// lcd.init();  //initialize the lcd
 			lcd.clear();
 			lcd.backlight();  //open the backlight
 			lcd.createChar(0, next);
