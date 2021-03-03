@@ -105,6 +105,7 @@ int power_mode=0; //0: no power mode 1:PID 2:EXT PWM 3:%Power
 void setup() {
   // put your setup code here, to run once:
     Serial.begin(9600);
+	
   //////////////////////////////////////////////////////////////////////////////////////
 	//SET GPIO
 	pinMode(13, OUTPUT);		//pin de los leds
@@ -182,9 +183,11 @@ void setup() {
 	// //PWM_READ GRBL_PWM(10000);
 
 	sei();						// Enable global interrupts
+	
 	#ifdef LCD_ACTIVE
 		//LCD MENU definitions    
 			lcd.init();  //initialize the lcd
+			Serial.println("init");
 			lcd.clear();
 			lcd.backlight();  //open the backlight
 			lcd.createChar(0, next);
@@ -207,7 +210,7 @@ void setup() {
 			M1.pick[2].mode=1;
 			//M1.print_menu();
 			
-			M21.header="SPINDLE_CONTROL";
+			M21.header="SPINDLE CONTROL";
 			M21.pick[0].picker_name="PID:";
 			M21.pick[0].mode=1;
 			M21.pick[1].picker_name="PWM:";
