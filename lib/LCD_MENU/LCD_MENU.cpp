@@ -2,9 +2,9 @@
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
-#include <EEPROM.h>
+//#include <EEPROM.h>
 
-contact::contact(int pin,int dbounce,int short_pulse,int long_pulse){
+contact::contact(uint8_t pin,uint16_t dbounce,uint16_t short_pulse,uint16_t long_pulse){
 	_t_pulse_start=0;
 	_t_long_end=0;
   	_pin=pin;
@@ -13,7 +13,7 @@ contact::contact(int pin,int dbounce,int short_pulse,int long_pulse){
 	_long_pulse=long_pulse;
 	_init_pulse=0;
 }
-contact::contact(int pin,int dbounce,int short_pulse){
+contact::contact(uint8_t pin,uint16_t dbounce,uint16_t short_pulse){
 	_t_pulse_start=0;
 	_t_long_end=0;
   	_pin=pin;
@@ -22,10 +22,13 @@ contact::contact(int pin,int dbounce,int short_pulse){
 	_long_pulse=100000;
 	_init_pulse=0;
 }
-int contact::type(){
+uint8_t contact::type(){
 	unsigned long t = millis();
-	int type=0;
-	
+	uint8_t type=0;
+		// Serial.print("dbounce: ");
+		// Serial.println(_dbounce);
+		// Serial.print("short_pulse: ");
+		// Serial.println(_short_pulse,DEC);
 	
 	if(digitalRead(_pin)==0 && _init_pulse==0){ //when a flank down is detetedit starts measuring how long is the contact pressed
 		_init_pulse=1;
@@ -33,16 +36,16 @@ int contact::type(){
     }
 	else if	(digitalRead(_pin)==1 && _init_pulse==1 && abs(t-_t_pulse_start)>_dbounce && abs(t-_t_pulse_start)<=_short_pulse && abs(t-_t_long_end)>_short_pulse ){ //cond1: if the contactor is released before the debounce the value is not released until the debounce has passed and it is considered short. If it is released after de debound but not passing the limit of the short it is ocnsidered short
 		_init_pulse=0;
-		//Serial.print("short: ");
-		//Serial.println(1);
+		// Serial.print("short: ");
+		// Serial.println(1);
 		type=1;
 		//return 1;
 		
 	}
 	else if	(digitalRead(_pin)==1 && _init_pulse==1 && abs(t-_t_pulse_start)>_short_pulse && abs(t-_t_pulse_start)<=_long_pulse ){ //cond2: if the contactor is released before the debounce it does not return a value until the debounce has passed
 		_init_pulse=0;
-		//Serial.print("long: ");
-		//Serial.println(2);
+		// Serial.print("long: ");
+		// Serial.println(2);
 		_t_long_end=t;
 		type=2;
 		//return 2;
@@ -51,8 +54,8 @@ int contact::type(){
 	else if (_init_pulse==1 && abs(t-_t_pulse_start)>_long_pulse){//cond2: if the contactor it is pushed for more time than the short push the long push it finishes and restarts
 		_init_pulse=0;
 		_t_long_end=t;
-		//Serial.print("long_repeticion: ");
-		//Serial.println(2);
+		// Serial.print("long_repeticion: ");
+		// Serial.println(2);
 		type=2;
 		//return 2;
 		
@@ -62,16 +65,16 @@ int contact::type(){
 };
 
 Picker::Picker(){
-      picker_name="Picker";
+      picker_name=F("");
       pos=0;//initialied later when the menu constructor is called
       mode=1;// default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
       state=0;
-      state_string0="OFF";
-      state_string1="ON";
+      state_string0=F("OFF");
+      state_string1=F("ON");
       value=0;
 	  new_value=0; //New value to add to picker.value
 	  decimals=0; // number of decimas to be displayed
-      unit="UNK";
+      unit=F("UNK");
 	  min_value=-10000;
 	  max_value=10000;
 	  inc_short=1;
@@ -88,19 +91,19 @@ Picker::Picker(){
       //Menu Sub_Menu(1);
 };
 
-Menu::Menu(int n_pick, int n_header_lines, LiquidCrystal_I2C *LCD,int up, int down, int set,int back){
+Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_t up, uint8_t down, uint8_t set,uint8_t back){
      
 	 navigation_mode=4;//4 buttons navigation mode
 	 event=0;
 	 
 	 header_lines=n_header_lines;
-     header="Prueba";
+     header=F("");
 	 
 	 n_rows=LCD->_rows;//total number of rows of the display  default 2
 	 n_cols=LCD->_cols;//total number of columns of the display  default 16
 
      pick=new Picker[n_pick];
-	 pick_pos=new int[n_pick];	
+	 pick_pos=new uint8_t[n_pick];	
 	 n_pickers=n_pick;
 	 cursor_pos=0; //[0 -> (nrows-1)-header_lines]
 	 
@@ -116,27 +119,27 @@ Menu::Menu(int n_pick, int n_header_lines, LiquidCrystal_I2C *LCD,int up, int do
 	 active=0;
  
 	 
-     for (int i=0;i<n_pick;i++){
+     for (uint8_t i=0;i<n_pick;i++){
          pick[i].pos=i;
 		 pick_pos[i]=i;
      };
 
 };
 
-Menu::Menu(int n_pick, int n_header_lines, LiquidCrystal_I2C *LCD,int up, int down, int set,int back,int next){
+Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_t up, uint8_t down, uint8_t set,uint8_t back,uint8_t next){
     
 
 	 navigation_mode=5;//5 buttons navigation mode
 	 event=0;
 	 
 	 header_lines=n_header_lines;
-     header="Prueba";
+     header=F("");
 	 
 	 n_rows=LCD->_rows;//total number of rows of the display  default 2
 	 n_cols=LCD->_cols;//total number of columns of the display  default 16
 
      pick=new Picker[n_pick];
-	 pick_pos=new int[n_pick];	
+	 pick_pos=new uint8_t[n_pick];	
 	 n_pickers=n_pick;
 	 cursor_pos=0; //[0 -> (nrows-1)-header_lines]
 	 
@@ -153,7 +156,7 @@ Menu::Menu(int n_pick, int n_header_lines, LiquidCrystal_I2C *LCD,int up, int do
 	 active=0;
  
 	 
-     for (int i=0;i<n_pick;i++){
+     for (uint8_t i=0;i<n_pick;i++){
          pick[i].pos=i;
 		 pick_pos[i]=i;
      };
@@ -162,11 +165,6 @@ Menu::Menu(int n_pick, int n_header_lines, LiquidCrystal_I2C *LCD,int up, int do
 
 void Menu::print_menu(){
 	 lcD->clear();
-	 
-	 Serial.print("header_lines: ");
-	 Serial.println(header_lines);
-	 Serial.print("cursor_pos: ");
-	 Serial.println(cursor_pos);
 	 
 	 lcD->setCursor(n_cols-1,header_lines+cursor_pos);
 	 switch (pick[pick_pos[cursor_pos]].mode){
@@ -206,17 +204,8 @@ void Menu::print_menu(){
 	 break;
 	 }
      for (int i=0;i<min(n_rows-header_lines,n_pickers);i++){
-		 
-		//  Serial.print("picker pos: ");
-		//  Serial.println(i);
-		  
+		 	  
 		 lcD->setCursor(0,i+header_lines);
-		 
-		//  Serial.print("picker name: ");
-		//  Serial.println(pick[pick_pos[i]].picker_name);
-		//  Serial.print("ADDRESS: ");
-		//  Serial.println(int(Panel));
-		 
 		 lcD->print(pick[pick_pos[i]].picker_name);
 	 }
 	 if (header_lines>0){
@@ -230,17 +219,18 @@ void Menu::print_menu(){
 };
 void Menu::check_button(void){
 		event=0;
-		int up_type=UP->type();
-		int down_type=DOWN->type();
-		int set_type=SET->type();
-		int back_type=BACK->type();
-		int next_type=NEXT->type();
-		/* Serial.print("UP type: ");
-		Serial.println(up_type);
-		Serial.print("DOWN type: ");
-		Serial.println(down_type);
-		Serial.print("SET type: ");
-		Serial.println(set_type); */
+		uint8_t up_type=UP->type();
+		uint8_t down_type=DOWN->type();
+		uint8_t set_type=SET->type();
+		uint8_t back_type=BACK->type();
+		uint8_t next_type=NEXT->type();
+		//  Serial.print("UP type: ");
+		// Serial.println(up_type);
+		// Serial.print("DOWN type: ");
+		// Serial.println(down_type);
+		// Serial.print("SET type: ");
+		// Serial.println(set_type);
+		
 		
 		//blink routine//
 		unsigned long t=millis();
@@ -272,8 +262,6 @@ void Menu::check_button(void){
 		
 		//button routines//
 		if (up_type==1){
-			//Serial.print("setup_mode: ");
-			//Serial.println(setup_mode);
 			if(setup_mode==0){
 				if(cursor_pos>0){					
 					cursor_pos--;
@@ -289,6 +277,7 @@ void Menu::check_button(void){
 				}
 
 			}
+			// Serial.println(cursor_pos);
 			print_menu();
 		}
 		if (up_type==2){
@@ -317,6 +306,7 @@ void Menu::check_button(void){
 				}
 
 			}
+			// Serial.println(cursor_pos);
 			print_menu();
 		}	
 		if (down_type==2){
@@ -373,7 +363,7 @@ void Menu::check_button(void){
 									pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
 									//pick[pick_pos[cursor_pos]].new_value=0;
 									if (pick[pick_pos[cursor_pos]].EEPROM_ACTIVE==1){
-										EEPROM.put(pick[pick_pos[cursor_pos]].EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
+										//EEPROM.put(pick[pick_pos[cursor_pos]].EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
 									}
 									pick[pick_pos[cursor_pos]].enabled=1;
 									event=1;
@@ -448,7 +438,7 @@ void Menu::check_button(void){
 								else {
 									pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
 									if (pick[pick_pos[cursor_pos]].EEPROM_ACTIVE==1){
-										EEPROM.put(pick[pick_pos[cursor_pos]].EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
+										//EEPROM.put(pick[pick_pos[cursor_pos]].EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
 									}
 									//pick[pick_pos[cursor_pos]].new_value=0;
 									pick[pick_pos[cursor_pos]].enabled=1;
@@ -581,12 +571,12 @@ void Menu::check_button(void){
 		};
 };
 void Menu::disable_all(void){
-	for (int i=0;i<n_pickers;i++){
+	for (uint8_t i=0;i<n_pickers;i++){
 		pick[i].enabled=0;
 	}
 }
 void Menu::reset_value(void){
-	for (int i=0;i<n_pickers;i++){
+	for (uint8_t i=0;i<n_pickers;i++){
 		pick[i].value=0;
 	}
 	
@@ -594,50 +584,33 @@ void Menu::reset_value(void){
 
 void init_array(int arr[],int size,int res){
     //int n = sizeof(arr) / sizeof(int);
-    for(int i=0;i<size;i++){
+    for(uint8_t i=0;i<size;i++){
         arr[i]=res;
     }
 };
-void move_up(int arr[], int size){
+void init_array(uint8_t arr[],uint8_t size,uint8_t res){
+    //int n = sizeof(arr) / sizeof(int);
+    for(uint8_t i=0;i<size;i++){
+        arr[i]=res;
+    }
+};
+void move_up(uint8_t arr[], uint8_t size){
     int buff=arr[0];
-    for (int i=0;i<size-1;i++){
+    for (uint8_t i=0;i<size-1;i++){
         arr[i]=arr[i+1] ;
     }
     arr[size-1]=buff;
 }
-void move_down(int arr[], int size){
-    int buff=arr[size-1];
-    for (int i=size-1;i>0;i--){
+void move_down(uint8_t arr[], uint8_t size){
+    uint8_t buff=arr[size-1];
+    for (uint8_t i=size-1;i>0;i--){
         arr[i]=arr[i-1] ;
     }
     arr[0]=buff;
 }
-int n_digit(int num){
-	int n=0;
-	if (num==0) {
-		n=1;
-	}
-	
-	else if (num>0){
-		while (num>0)
-		{
-			num=num/10;
-			n++;
-		}
-	}
-	else if (num<0){
-		while (num<0)
-		{
-			num=num/10;
-			n++;
-		}
-		n+1;
-	}
-    return n;
-}
 int n_digit(float num){
 	//Serial.println("n_digit:");
-	int n=0;
+	uint8_t n=0;
 	long numm=long(trunc(num));
 	//Serial.println(numm);
 	if (numm==0) {
@@ -669,6 +642,13 @@ float  round_n (float val,int dig){
 	return r_val;
 	//Serial.println("/round_n:");
 }
+float  round_n (float val,uint8_t dig){
+		//Serial.println("round_n:");
+	float r_val=trunc(round(val*pow(10.0,dig)))/pow(10.0,dig);
+	//Serial.println(r_val);
+	return r_val;
+	//Serial.println("/round_n:");
+}
 int  num_disp_length (float val,int dig){
 	//Serial.println("num_disp_length:");
 	long n=n_digit(val)+dig;
@@ -678,7 +658,25 @@ int  num_disp_length (float val,int dig){
 	return n;
 	//Serial.println("/num_disp_length:");
 }
+int  num_disp_length (float val,uint8_t dig){
+	//Serial.println("num_disp_length:");
+	long n=n_digit(val)+dig;
+	if (dig>0){n++;};
+	if (val<0) {n++;};
+	//Serial.println(n);
+	return n;
+	//Serial.println("/num_disp_length:");
+}
 float range_loop(float x, float _max_x,float _min_x,int decimals){
+	  if(x>=_max_x){
+		  return round_n(_min_x+(x-_max_x)-(_max_x-_min_x)*trunc((x-_max_x)/(_max_x-_min_x)),decimals);      
+	  }
+	  else if( x<_min_x){
+	  return round_n(_max_x-(_min_x-x)-(_max_x-_min_x)*trunc((x-_min_x)/(_max_x-_min_x)),decimals);
+	  }
+	  else { return round_n(x,decimals);}
+}
+float range_loop(float x, float _max_x,float _min_x,uint8_t decimals){
 	  if(x>=_max_x){
 		  return round_n(_min_x+(x-_max_x)-(_max_x-_min_x)*trunc((x-_max_x)/(_max_x-_min_x)),decimals);      
 	  }

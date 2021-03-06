@@ -80,8 +80,8 @@ PID PID1(0.002, 2 ,0, 1800, minPWM, maxPWM, 100);
 	Menu M21(3,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	// Menu M22(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	Menu M211(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	// Menu M212(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	// Menu M213(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+	Menu M212(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+	Menu M213(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	
 #endif
 //Variables#############################################################
@@ -100,11 +100,11 @@ float T=1024 / 16000000.0;//0.000064;	//6.4e-5s
 float buff=255;
 float Tc=T*(buff+1);
 
-int power_mode=0; //0: no power mode 1:PID 2:EXT PWM 3:%Power
+uint8_t power_mode=0; //0: no power mode 1:PID 2:EXT PWM 3:%Power
 
 void setup() {
   // put your setup code here, to run once:
-    Serial.begin(9600);
+    // Serial.begin(9600);
 	
   //////////////////////////////////////////////////////////////////////////////////////
 	//SET GPIO
@@ -187,41 +187,41 @@ void setup() {
 	#ifdef LCD_ACTIVE
 		//LCD MENU definitions    
 			lcd.init();  //initialize the lcd
-			Serial.println("init");
+			// Serial.println(F("init"));
 			lcd.clear();
 			lcd.backlight();  //open the backlight
 			lcd.createChar(0, next);
 			lcd.setCursor(0,0);
-			lcd.print("ERU Project 4.0");
+			lcd.print(F("ERU Project 4.0"));
 			lcd.setCursor(0,1);
-			lcd.print("AntS 2021");
+			lcd.print(F("AntS 2021"));
 			lcd.createChar(0,next);
 			delay(2000);
 
 			lcd.clear();
 
 		//Define Menu Pannels
-		    M1.header="ERU";
-			M1.pick[0].picker_name="LIGHT";
+		    M1.header=F("ERU");
+			M1.pick[0].picker_name=F("LIGHT");
 			M1.pick[0].mode=2;
-			M1.pick[1].picker_name="SPINDLE";
+			M1.pick[1].picker_name=F("SPINDLE");
 			M1.pick[1].mode=1;
-			M1.pick[2].picker_name="CONFIG";
+			M1.pick[2].picker_name=F("CONFIG");
 			M1.pick[2].mode=1;
 			//M1.print_menu();
 			
-			M21.header="SPINDLE CONTROL";
-			M21.pick[0].picker_name="PID:";
+			M21.header=F("SPINDLE CONTROL");
+			M21.pick[0].picker_name=F("PID:");
 			M21.pick[0].mode=1;
-			M21.pick[1].picker_name="PWM:";
+			M21.pick[1].picker_name=F("PWM:");
 			M21.pick[1].mode=1;
-			M21.pick[2].picker_name="PWR%:";
+			M21.pick[2].picker_name=F("PWR%:");
 			M21.pick[2].mode=1;
 
-			M211.header="SPINDLE PID";
-			M211.pick[0].picker_name="Target:";
+			M211.header=F("SPINDLE PID");
+			M211.pick[0].picker_name=F("Target:");
 			M211.pick[0].mode=3;
-			M211.pick[0].unit="rpm";
+			M211.pick[0].unit=F("rpm");
 			M211.pick[0].decimals=0;
 			M211.pick[0].inc_short=50;
 			M211.pick[0].inc_long=500;
@@ -229,25 +229,25 @@ void setup() {
 			M211.pick[0].min_value=0;
 			M211.pick[0].ref=1;
 
-			// M212.header="EXT PWM";
-			// M212.pick[0].picker_name="PWM LINK:";
-			// M212.pick[0].mode=2;
-			// M212.pick[0].state_string0="DISCONECTED";
-			// M212.pick[0].state_string1="CONNECTED";
-			// M212.pick[0].ref=2;
+			M212.header=F("EXT PWM");
+			M212.pick[0].picker_name=F("PWM LINK:");
+			M212.pick[0].mode=2;
+			M212.pick[0].state_string0=F("DISCONECTED");
+			M212.pick[0].state_string1=F("CONNECTED");
+			M212.pick[0].ref=2;
 
-			// M213.header="SPINDLE PWR %:";
-			// M213.pick[0].mode=3;
-			// M213.pick[0].unit="%";
-			// M213.pick[0].decimals=0;
-			// M213.pick[0].inc_short=1;
-			// M213.pick[0].inc_long=10;
-			// M213.pick[0].max_value=100;
-			// M213.pick[0].min_value=0;
-			// M213.pick[0].ref=3;
+			M213.header=F("SPINDLE PWR %:");
+			M213.pick[0].mode=3;
+			M213.pick[0].unit=F("%");
+			M213.pick[0].decimals=0;
+			M213.pick[0].inc_short=1;
+			M213.pick[0].inc_long=10;
+			M213.pick[0].max_value=100;
+			M213.pick[0].min_value=0;
+			M213.pick[0].ref=3;
 			
-			// M22.header="CONFIG";
-			// M22.pick[0].picker_name="P";
+			// M22.header=F("CONFIG");
+			// M22.pick[0].picker_name=F("P");
 			// M22.pick[0].mode=3;
 			// M22.pick[0].unit="";
 			// M22.pick[0].decimals=0;
@@ -256,34 +256,34 @@ void setup() {
 			// M22.pick[0].min_value=0;
 			// M22.pick[0].EEPROM_ACTIVE=1;
 			// M22.pick[0].EEPROM_ADDR=0;
-			// EEPROM.get(M22.pick[0].EEPROM_ADDR,M22.pick[0].value);
+			// // EEPROM.get(M22.pick[0].EEPROM_ADDR,M22.pick[0].value);
 
-			// M22.pick[1].picker_name="D";
+			// M22.pick[1].picker_name=F("D");
 			// M22.pick[1].mode=3;
-			// M22.pick[1].unit="";
+			// M22.pick[1].unit=F("");
 			// M22.pick[1].decimals=0;
 			// M22.pick[1].inc_long=10;
 			// M22.pick[1].inc_short=1;
 			// M22.pick[1].min_value=0;
 			// M22.pick[1].EEPROM_ACTIVE=1;
 			// M22.pick[1].EEPROM_ADDR=4;
-			// EEPROM.get(M22.pick[1].EEPROM_ADDR,M22.pick[1].value);
+			// // EEPROM.get(M22.pick[1].EEPROM_ADDR,M22.pick[1].value);
 
-			// M22.pick[2].picker_name="I";
+			// M22.pick[2].picker_name=F("I");
 			// M22.pick[2].mode=3;
-			// M22.pick[2].unit="";
+			// M22.pick[2].unit=F("");
 			// M22.pick[2].decimals=0;
 			// M22.pick[2].inc_long=10;
 			// M22.pick[2].inc_short=1;
 			// M22.pick[2].min_value=0;
 			// M22.pick[2].EEPROM_ACTIVE=1;
 			// M22.pick[2].EEPROM_ADDR=8;
-			// EEPROM.get(M22.pick[2].EEPROM_ADDR,M22.pick[2].value);
+			// // EEPROM.get(M22.pick[2].EEPROM_ADDR,M22.pick[2].value);
 
-			// M22.pick[3].picker_name="Temp max";
+			// M22.pick[3].picker_name=F("Temp max");
 			// M22.pick[3].value=70.0;
 			// M22.pick[3].mode=3;
-			// M22.pick[3].unit="ºC";
+			// M22.pick[3].unit=F("ºC");
 			// M22.pick[3].decimals=1;
 			// M22.pick[3].inc_long=10;
 			// M22.pick[3].inc_short=1;
@@ -295,10 +295,10 @@ void setup() {
 
 			//Define menu interconnections
 			M1.pick[1].child=&M21;
-			// M1.pick[2].child=&M22;
+		    // M1.pick[2].child=&M22;
 			M21.pick[0].child=&M211;
-			// M21.pick[1].child=&M212;
-			// M21.pick[2].child=&M213;
+			M21.pick[1].child=&M212;
+			M21.pick[2].child=&M213;
 
 			M21.pick[0].parent=&M1;
 			M21.pick[1].parent=&M1;
@@ -309,14 +309,14 @@ void setup() {
 			// M22.pick[3].parent=&M1;
 
 			M211.pick[0].parent=&M21;
-			// M212.pick[0].parent=&M21;
-			// M213.pick[0].parent=&M21;
+			M212.pick[0].parent=&M21;
+			M213.pick[0].parent=&M21;
 			
 			Panel=&M1; //inicializo en panel principal
 			Panel->print_menu();
 	#endif
     //Inicializo el serial print
-	Serial.println("ERU Project 4.0 Spindle control start...");
+	// Serial.println(F("ERU Project 4.0 Spindle control start..."));
     delay(1000);
 
 	#ifndef LCD_ACTIVE
