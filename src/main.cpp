@@ -72,16 +72,14 @@
 // PID #############################################################
 int maxPWM=4000;
 int minPWM=1900;
-PID PID1(0.002, 2 ,0, 1800, minPWM, maxPWM, 100);
+PID PID1(0.01, 20 ,0, 1800, minPWM, maxPWM, 50);
 
 // //MENU#############################################################
 #ifdef LCD_ACTIVE
-	Menu M1(3,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	Menu M21(3,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	// Menu M22(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+	Menu M1(2,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+	Menu M21(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	Menu M211(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	Menu M212(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	Menu M213(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+	// Menu M213(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	
 #endif
 //Variables#############################################################
@@ -100,11 +98,11 @@ float T=1024 / 16000000.0;//0.000064;	//6.4e-5s
 float buff=255;
 float Tc=T*(buff+1);
 
-uint8_t power_mode=0; //0: no power mode 1:PID 2:EXT PWM 3:%Power
+uint8_t power_mode=1; //0: no power mode 1:PID 2:EXT PWM 3:%Power
 
 void setup() {
   // put your setup code here, to run once:
-    // Serial.begin(9600);
+    Serial.begin(9600);
 	
   //////////////////////////////////////////////////////////////////////////////////////
 	//SET GPIO
@@ -159,7 +157,7 @@ void setup() {
 	//Inicializo el TOP/y el duty
 
 	OCR1A=40000;				//40000=20ms
-	OCR1B=1900;					//rango de 2000 a 4000 =>2000=1ms 4000=2ms
+	OCR1B=1800;					//rango de 2000 a 4000 =>2000=1ms 4000=2ms
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	//inicializo timer2/overflow
@@ -201,24 +199,19 @@ void setup() {
 			lcd.clear();
 
 		//Define Menu Pannels
-		    M1.header=F("ERU");
+		    // M1.header=F("ERU");
 			M1.pick[0].picker_name=F("LIGHT");
 			M1.pick[0].mode=2;
 			M1.pick[1].picker_name=F("SPINDLE");
 			M1.pick[1].mode=1;
-			M1.pick[2].picker_name=F("CONFIG");
-			M1.pick[2].mode=1;
-			//M1.print_menu();
+	
 			
-			M21.header=F("SPINDLE CONTROL");
+			//M21.header=F("SPINDLE CONTROL");
 			M21.pick[0].picker_name=F("PID:");
 			M21.pick[0].mode=1;
-			M21.pick[1].picker_name=F("PWM:");
-			M21.pick[1].mode=1;
-			M21.pick[2].picker_name=F("PWR%:");
-			M21.pick[2].mode=1;
+			M21.header=F("SPINDLE CONTROL");
 
-			M211.header=F("SPINDLE PID");
+			// M211.header=F("SPINDLE PID");
 			M211.pick[0].picker_name=F("Target:");
 			M211.pick[0].mode=3;
 			M211.pick[0].unit=F("rpm");
@@ -229,22 +222,22 @@ void setup() {
 			M211.pick[0].min_value=0;
 			M211.pick[0].ref=1;
 
-			M212.header=F("EXT PWM");
-			M212.pick[0].picker_name=F("PWM LINK:");
-			M212.pick[0].mode=2;
-			M212.pick[0].state_string0=F("DISCONECTED");
-			M212.pick[0].state_string1=F("CONNECTED");
-			M212.pick[0].ref=2;
+			// M212.header=F("EXT PWM");
+			// M212.pick[0].picker_name=F("PWM LINK:");
+			// M212.pick[0].mode=2;
+			// M212.pick[0].state_string0=F("DISCONECTED");
+			// M212.pick[0].state_string1=F("CONNECTED");
+			// M212.pick[0].ref=2;
 
-			M213.header=F("SPINDLE PWR %:");
-			M213.pick[0].mode=3;
-			M213.pick[0].unit=F("%");
-			M213.pick[0].decimals=0;
-			M213.pick[0].inc_short=1;
-			M213.pick[0].inc_long=10;
-			M213.pick[0].max_value=100;
-			M213.pick[0].min_value=0;
-			M213.pick[0].ref=3;
+			// M213.header=F("SPINDLE PWR %:");
+			// M213.pick[0].mode=3;
+			// M213.pick[0].unit=F("%");
+			// M213.pick[0].decimals=0;
+			// M213.pick[0].inc_short=1;
+			// M213.pick[0].inc_long=10;
+			// M213.pick[0].max_value=100;
+			// M213.pick[0].min_value=0;
+			// M213.pick[0].ref=3;
 			
 			// M22.header=F("CONFIG");
 			// M22.pick[0].picker_name=F("P");
@@ -291,38 +284,39 @@ void setup() {
 			// M22.pick[3].min_value=0;
 			// M22.pick[3].EEPROM_ACTIVE=1;
 			// M22.pick[3].EEPROM_ADDR=12;
-			// EEPROM.get(M22.pick[3].EEPROM_ADDR,M22.pick[3].value);
+			// // EEPROM.get(M22.pick[3].EEPROM_ADDR,M22.pick[3].value);
 
 			//Define menu interconnections
 			M1.pick[1].child=&M21;
 		    // M1.pick[2].child=&M22;
-			M21.pick[0].child=&M211;
-			M21.pick[1].child=&M212;
-			M21.pick[2].child=&M213;
+			 M21.pick[0].child=&M211;
+			// M21.pick[1].child=&M212;
+			// M21.pick[2].child=&M213;
 
 			M21.pick[0].parent=&M1;
-			M21.pick[1].parent=&M1;
-			M21.pick[2].parent=&M1;
+	
+			
 			// M22.pick[0].parent=&M1;
 			// M22.pick[1].parent=&M1;
 			// M22.pick[2].parent=&M1;
 			// M22.pick[3].parent=&M1;
 
 			M211.pick[0].parent=&M21;
-			M212.pick[0].parent=&M21;
-			M213.pick[0].parent=&M21;
+			// M212.pick[0].parent=&M21;
+			// M213.pick[0].parent=&M21;
 			
 			Panel=&M1; //inicializo en panel principal
 			Panel->print_menu();
 	#endif
     //Inicializo el serial print
 	// Serial.println(F("ERU Project 4.0 Spindle control start..."));
-    delay(1000);
+
 
 	#ifndef LCD_ACTIVE
+		pwm_target=1800;
 		v_target=2500;
 		power_mode=1;
-
+    	//delay(10000);
 		// Serial.print("start with target speed ");
 		// Serial.print(v_target);
 		// Serial.println("rmp");
@@ -340,29 +334,40 @@ void loop() {
 		// 	PID1.Param(M22.pick[0].value,M22.pick[1].value,M22.pick[2].value);
 		// }
 
-		// switch (power_mode){
-		// 	case 1:
-		// 		pwm_target=PID1.Evaluate(v,M211.pick[0].value);
-		// 		break;
-		// 	case 2:
-		// 		break;
-		// 	case 3:
-		// 		pwm_target=int(2200*M213.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
-		// 		break;
-		// 	}
-	#endif
-	//#ifndef LCD_ACTIVE
-	//pwm_target=PID1.Evaluate(v,v_target);
-	// Serial.print("T:");
-	// Serial.print(v_target);
-	// Serial.print("rpm V:");
-	// Serial.print(v);
-	// Serial.print("rpm PWM:");
-	// Serial.print(pwm_target);
-	// Serial.println("");
+		switch (power_mode){
+			case 1:
+				pwm_target=PID1.Evaluate(v,M211.pick[0].value);
+				// Panel->header=v;
+				// Panel->event=1;
+				// if (Panel->event==1) {Panel->print_menu(); Panel->event=0; delay(100);}
+				break;
+			// case 2:
+			// 	break;
+			// case 3:
+			//  	pwm_target=int(2200*M213.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
+			// break;
+			}
 
-	//pwm_target=int(2200*M21.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
-	//#endif
+		Serial.print("T:");
+		Serial.print(M211.pick[0].value);
+		Serial.print("rpm V:");
+		Serial.print(v);
+		Serial.print("rpm PWM:");
+		Serial.print(pwm_target);
+		Serial.println("");
+	#endif
+	#ifndef LCD_ACTIVE
+		pwm_target=PID1.Evaluate(v,v_target);
+		Serial.print("T:");
+		Serial.print(v_target);
+		Serial.print("rpm V:");
+		Serial.print(v);
+		Serial.print("rpm PWM:");
+		Serial.print(pwm_target);
+		Serial.println("");
+
+		//pwm_target=int(2200*v_target/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
+	#endif
 
 }
 

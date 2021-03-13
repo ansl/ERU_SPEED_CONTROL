@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
+
 //#include <EEPROM.h>
 
 contact::contact(uint8_t pin,uint16_t dbounce,uint16_t short_pulse,uint16_t long_pulse){
@@ -93,11 +94,12 @@ Picker::Picker(){
 
 Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_t up, uint8_t down, uint8_t set,uint8_t back){
      
+	 menu_ref=0;
 	 navigation_mode=4;//4 buttons navigation mode
 	 event=0;
 	 
 	 header_lines=n_header_lines;
-     header=F("");
+    //  header=F("");
 	 
 	 n_rows=LCD->_rows;//total number of rows of the display  default 2
 	 n_cols=LCD->_cols;//total number of columns of the display  default 16
@@ -128,12 +130,12 @@ Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_
 
 Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_t up, uint8_t down, uint8_t set,uint8_t back,uint8_t next){
     
-
+	 menu_ref=0;
 	 navigation_mode=5;//5 buttons navigation mode
 	 event=0;
 	 
 	 header_lines=n_header_lines;
-     header=F("");
+    //  header=F("");
 	 
 	 n_rows=LCD->_rows;//total number of rows of the display  default 2
 	 n_cols=LCD->_cols;//total number of columns of the display  default 16
@@ -370,7 +372,7 @@ void Menu::check_button(void){
 								}
 								break;		
 					}			
-				print_menu();				
+				Panel->print_menu();				
 			}
 				if (back_type==1){
 					switch(pick[pick_pos[cursor_pos]].mode){
@@ -457,9 +459,10 @@ void Menu::check_button(void){
 						case 3:
 								reset_value();
 								event=1;
+								setup_mode=0;
 								break;		
 				}			
-				print_menu();				
+				Panel->print_menu();				
 			}
 				if (next_type==1){
 					switch(pick[pick_pos[cursor_pos]].mode){
@@ -578,6 +581,7 @@ void Menu::disable_all(void){
 void Menu::reset_value(void){
 	for (uint8_t i=0;i<n_pickers;i++){
 		pick[i].value=0;
+		pick[i].new_value=0;
 	}
 	
 }

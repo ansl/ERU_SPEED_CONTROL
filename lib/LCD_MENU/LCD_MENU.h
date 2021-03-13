@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
-#include <EEPROM.h>
+#include <MENU_DEF.h>
 
 
 class Menu;
@@ -36,13 +36,14 @@ class Menu {
 	  void disable_all(void); //disables all the pickers picker.enabled=0
 	  void reset_value(void); //reset the picker.Value=0
 
+	  uint8_t menu_ref;
 	  uint8_t navigation_mode;//defines if it is a 4-5 buttons navigation mode
 	  bool event; //determines if there was an change in the menu
 	  uint8_t n_rows;
 	  uint8_t n_cols;
 	  
 	  uint8_t header_lines;
-      String header;
+    //   String header;
 	  
 	  Picker *pick;
 	  uint8_t *pick_pos;
@@ -71,7 +72,8 @@ class Picker {
    public:
       Picker();
       void print_picker(void);
-      String picker_name; //Picker name
+    //   String picker_name; //Picker name
+
       uint8_t pos;//position in the menu list
       uint8_t mode; //default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
 	  bool enabled; //flag to define if hte picker is enabled
