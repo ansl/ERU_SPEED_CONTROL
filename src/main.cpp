@@ -76,10 +76,12 @@ PID PID1(0.01, 20 ,0, 1800, minPWM, maxPWM, 50);
 
 // //MENU#############################################################
 #ifdef LCD_ACTIVE
-	Menu M1(2,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	Menu M21(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	Menu M211(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-	// Menu M213(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+	Menu M1(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+		Menu M11(3,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+			Menu M110(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+			Menu M111(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+			Menu M112(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+		Menu M12(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	
 #endif
 //Variables#############################################################
@@ -198,112 +200,46 @@ void setup() {
 
 			lcd.clear();
 
-		//Define Menu Pannels
-		    // M1.header=F("ERU");
-			M1.pick[0].picker_name=F("LIGHT");
-			M1.pick[0].mode=2;
-			M1.pick[1].picker_name=F("SPINDLE");
-			M1.pick[1].mode=1;
-	
-			
-			//M21.header=F("SPINDLE CONTROL");
-			M21.pick[0].picker_name=F("PID:");
-			M21.pick[0].mode=1;
-			M21.header=F("SPINDLE CONTROL");
+		//Define Menu Pannel refferences
+		M1.menu_ref=0;
+		M11.menu_ref=1;
+		M110.menu_ref=2;
+		M111.menu_ref=3;
+		M112.menu_ref=4;
+		M12.menu_ref=5;
+		//ERU_MAIN
+			// LIGHT
+			M1.pick[0].ref=0;
+			// SPINDLE
+			M1.pick[1].ref=1;
+				// SPINDLE CONTROL
+				M11.pick[0].ref=2;
+					M110.pick[0].ref=3;
+				M11.pick[1].ref=4;
+					M111.pick[0].ref=5;
+				M11.pick[2].ref=6;
+					M112.pick[0].ref=7;
+			// CONFIG
+			M1.pick[2].ref=8;
+				M12.pick[0].ref=9;
+				M12.pick[1].ref=10;
+				M12.pick[2].ref=11;
+				M12.pick[3].ref=12;
+			// COOLANT
+			M1.pick[3].ref=13;
 
-			// M211.header=F("SPINDLE PID");
-			M211.pick[0].picker_name=F("Target:");
-			M211.pick[0].mode=3;
-			M211.pick[0].unit=F("rpm");
-			M211.pick[0].decimals=0;
-			M211.pick[0].inc_short=50;
-			M211.pick[0].inc_long=500;
-			M211.pick[0].max_value=50000;
-			M211.pick[0].min_value=0;
-			M211.pick[0].ref=1;
+		//Define menu interconnections
+			M1.pick[1].child=&M11;
+				M11.pick[0].child=&M110;
+				M11.pick[1].child=&M111;
+				M11.pick[2].child=&M112;
+		    M1.pick[2].child=&M12;
 
-			// M212.header=F("EXT PWM");
-			// M212.pick[0].picker_name=F("PWM LINK:");
-			// M212.pick[0].mode=2;
-			// M212.pick[0].state_string0=F("DISCONECTED");
-			// M212.pick[0].state_string1=F("CONNECTED");
-			// M212.pick[0].ref=2;
-
-			// M213.header=F("SPINDLE PWR %:");
-			// M213.pick[0].mode=3;
-			// M213.pick[0].unit=F("%");
-			// M213.pick[0].decimals=0;
-			// M213.pick[0].inc_short=1;
-			// M213.pick[0].inc_long=10;
-			// M213.pick[0].max_value=100;
-			// M213.pick[0].min_value=0;
-			// M213.pick[0].ref=3;
-			
-			// M22.header=F("CONFIG");
-			// M22.pick[0].picker_name=F("P");
-			// M22.pick[0].mode=3;
-			// M22.pick[0].unit="";
-			// M22.pick[0].decimals=0;
-			// M22.pick[0].inc_long=10;
-			// M22.pick[0].inc_short=1;
-			// M22.pick[0].min_value=0;
-			// M22.pick[0].EEPROM_ACTIVE=1;
-			// M22.pick[0].EEPROM_ADDR=0;
-			// // EEPROM.get(M22.pick[0].EEPROM_ADDR,M22.pick[0].value);
-
-			// M22.pick[1].picker_name=F("D");
-			// M22.pick[1].mode=3;
-			// M22.pick[1].unit=F("");
-			// M22.pick[1].decimals=0;
-			// M22.pick[1].inc_long=10;
-			// M22.pick[1].inc_short=1;
-			// M22.pick[1].min_value=0;
-			// M22.pick[1].EEPROM_ACTIVE=1;
-			// M22.pick[1].EEPROM_ADDR=4;
-			// // EEPROM.get(M22.pick[1].EEPROM_ADDR,M22.pick[1].value);
-
-			// M22.pick[2].picker_name=F("I");
-			// M22.pick[2].mode=3;
-			// M22.pick[2].unit=F("");
-			// M22.pick[2].decimals=0;
-			// M22.pick[2].inc_long=10;
-			// M22.pick[2].inc_short=1;
-			// M22.pick[2].min_value=0;
-			// M22.pick[2].EEPROM_ACTIVE=1;
-			// M22.pick[2].EEPROM_ADDR=8;
-			// // EEPROM.get(M22.pick[2].EEPROM_ADDR,M22.pick[2].value);
-
-			// M22.pick[3].picker_name=F("Temp max");
-			// M22.pick[3].value=70.0;
-			// M22.pick[3].mode=3;
-			// M22.pick[3].unit=F("ºC");
-			// M22.pick[3].decimals=1;
-			// M22.pick[3].inc_long=10;
-			// M22.pick[3].inc_short=1;
-			// M22.pick[3].max_value=100;
-			// M22.pick[3].min_value=0;
-			// M22.pick[3].EEPROM_ACTIVE=1;
-			// M22.pick[3].EEPROM_ADDR=12;
-			// // EEPROM.get(M22.pick[3].EEPROM_ADDR,M22.pick[3].value);
-
-			//Define menu interconnections
-			M1.pick[1].child=&M21;
-		    // M1.pick[2].child=&M22;
-			 M21.pick[0].child=&M211;
-			// M21.pick[1].child=&M212;
-			// M21.pick[2].child=&M213;
-
-			M21.pick[0].parent=&M1;
-	
-			
-			// M22.pick[0].parent=&M1;
-			// M22.pick[1].parent=&M1;
-			// M22.pick[2].parent=&M1;
-			// M22.pick[3].parent=&M1;
-
-			M211.pick[0].parent=&M21;
-			// M212.pick[0].parent=&M21;
-			// M213.pick[0].parent=&M21;
+			M11.pick[0].parent=&M1;
+				M110.pick[0].parent=&M11;
+				M111.pick[0].parent=&M11;
+				M112.pick[0].parent=&M11;
+			M12.pick[0].parent=&M1;
 			
 			Panel=&M1; //inicializo en panel principal
 			Panel->print_menu();
@@ -336,7 +272,7 @@ void loop() {
 
 		switch (power_mode){
 			case 1:
-				pwm_target=PID1.Evaluate(v,M211.pick[0].value);
+				pwm_target=PID1.Evaluate(v,M110.pick[0].value);
 				// Panel->header=v;
 				// Panel->event=1;
 				// if (Panel->event==1) {Panel->print_menu(); Panel->event=0; delay(100);}

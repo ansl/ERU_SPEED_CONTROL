@@ -66,27 +66,27 @@ uint8_t contact::type(){
 };
 
 Picker::Picker(){
-      picker_name=F("");
+    //   picker_name=F("");
       pos=0;//initialied later when the menu constructor is called
-      mode=1;// default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
+    //   mode=1;// default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
       state=0;
-      state_string0=F("OFF");
-      state_string1=F("ON");
+    //   state_string0=F("OFF");
+    //   state_string1=F("ON");
       value=0;
 	  new_value=0; //New value to add to picker.value
-	  decimals=0; // number of decimas to be displayed
-      unit=F("UNK");
-	  min_value=-10000;
-	  max_value=10000;
-	  inc_short=1;
-	  inc_long=10;
+	//   decimals=0; // number of decimas to be displayed
+    //   unit=F("UNK");
+	//   min_value=-10000;
+	//   max_value=10000;
+	//   inc_short=1;
+	//   inc_long=10;
       blink=0;
-	  tblink=300;
+	//   tblink=300;
 	  enabled=0;
       child=0;
 	  parent=0;
-	  EEPROM_ACTIVE=0;
-	  EEPROM_ADDR=0;
+	//   EEPROM_ACTIVE=0;
+	//   EEPROM_ADDR=0;
 	  ref=0;
 
       //Menu Sub_Menu(1);

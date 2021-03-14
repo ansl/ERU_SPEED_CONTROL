@@ -73,30 +73,27 @@ class Picker {
       Picker();
       void print_picker(void);
     //   String picker_name; //Picker name
-
       uint8_t pos;//position in the menu list
-      uint8_t mode; //default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
+    //   uint8_t mode; //default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
 	  bool enabled; //flag to define if hte picker is enabled
       bool state; //for picker type 2 0=OFF 1=0N
-      String state_string0; //string for state =0
-      String state_string1; //string for state =1
-	  //
+    //   String state_string0; //string for state =0
+    //   String state_string1; //string for state =1
       float value; //value displayed on pickers type 3
 	  float new_value; // variablle to store the new value during hte changing procedure
-	  uint8_t decimals; //number of decimals of the Value displayed
-      String unit; // Unit of value
-	  float min_value;
-	  float max_value;
-	  uint16_t inc_short;// increment of vaue while short click
-	  uint16_t inc_long;// increment of vaue while long click
-    
+	//   uint8_t decimals; //number of decimals of the Value displayed
+    //   String unit; // Unit of value
+	//   float min_value;
+	//   float max_value;
+	//   uint16_t inc_short;// increment of vaue while short click
+	//   uint16_t inc_long;// increment of vaue while long click
 	  bool blink; 
-	  uint16_t tblink;
+	//   uint16_t tblink;
 	  //
       Menu *child; // address of hte Child menu
 	  Menu *parent; // address of hte Parent menu
-	  bool EEPROM_ACTIVE;
-	  uint8_t EEPROM_ADDR;
+	//   bool EEPROM_ACTIVE;
+	//   uint8_t EEPROM_ADDR;
 	  uint8_t ref;
    //private:
 };
