@@ -21,7 +21,20 @@
 //     const uint8_t PROGMEM M1_PICKER_EEPROM_ADDR_0 = 0;
 /////////////////////////////////////////////////////////////////
 
-static char lcd_buff[20];
+static char MENU_Header[20];
+static uint8_t PICKER_mode;
+static char PICKER_name[15];
+static char PICKER_state_string0[10];
+static char PICKER_state_string1[10];
+static uint8_t PICKER_decimals;
+static char PICKER_unit[3];
+static float PICKER_min_value;
+static float PICKER_max_value;
+static uint16_t PICKER_inc_short;
+static uint16_t PICKER_inc_long;
+static uint16_t PICKER_tblink;
+static uint8_t PICKER_EEPROM_ADDR;
+
 const char PROGMEM M1_HEADER[]  = "ERU";
 
     const uint8_t PROGMEM M1_PICKER_mode_0 = 2;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
