@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
-#include "MENU_DEF.h"
+ #include "MENU_DEF.h"
 //#include <EEPROM.h>
 
 contact::contact(uint8_t pin,uint16_t dbounce,uint16_t short_pulse,uint16_t long_pulse){
@@ -85,7 +85,7 @@ Picker::Picker(){
 	  enabled=0;
       child=0;
 	  parent=0;
-	//   EEPROM_ACTIVE=0;
+	  EEPROM_ACTIVE=0;
 	//   EEPROM_ADDR=0;
 	  ref=0;
 
@@ -168,7 +168,13 @@ Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_
 void Menu::print_menu(){
 
 	strcpy_P(MENU_Header, (char*)pgm_read_word(&(M_Header_table[menu_ref])));
-  	PICKER_mode=pgm_read_byte(M_Picker_mode_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(MENU_Header);
+Serial.println(strlen(MENU_Header));
+  	PICKER_mode=(uint8_t)pgm_read_byte(M_Picker_mode_table[pick[pick_pos[cursor_pos]].ref]);
+	  
+Serial.println(pick[pick_pos[cursor_pos]].ref);
+Serial.println(PICKER_mode,BIN);
+
 	strcpy_P(PICKER_name, (char*)pgm_read_word(&(M_Picker_name_table[pick[pick_pos[cursor_pos]].ref])));
 	strcpy_P(PICKER_state_string0, (char*)pgm_read_word(&(M_Picker_state_string0_table[pick[pick_pos[cursor_pos]].ref])));
 	strcpy_P(PICKER_state_string1, (char*)pgm_read_word(&(M_Picker_state_string1_table[pick[pick_pos[cursor_pos]].ref])));
@@ -184,50 +190,50 @@ void Menu::print_menu(){
 
 	 lcD->clear();
 	 lcD->setCursor(n_cols-1,header_lines+cursor_pos);
-	 switch (pick[pick_pos[cursor_pos]].mode){
+	 switch (PICKER_mode){
 	 case 1:
 		 lcD->setCursor(n_cols-1,header_lines+cursor_pos);
 		 lcD->write(0);
 	 break;
 	 case 2:
 		 if (pick[pick_pos[cursor_pos]].state==0){
-			lcD->setCursor(n_cols-pick[pick_pos[cursor_pos]].state_string0.length(),header_lines+cursor_pos);
-			lcD->print(pick[pick_pos[cursor_pos]].state_string0);
+			lcD->setCursor(strlen(PICKER_state_string0),header_lines+cursor_pos);
+			lcD->print(PICKER_state_string0);
 		 }
 		 else{
-			lcD->setCursor(n_cols-pick[pick_pos[cursor_pos]].state_string1.length(),header_lines+cursor_pos);
-			lcD->print(pick[pick_pos[cursor_pos]].state_string1);
+			lcD->setCursor(strlen(PICKER_state_string1),header_lines+cursor_pos);
+			lcD->print(PICKER_state_string1);
 		 }
 	 break;
 	 case 3:
-			lcD->setCursor(n_cols-pick[pick_pos[cursor_pos]].unit.length(),header_lines+cursor_pos);
-			lcD->print(pick[pick_pos[cursor_pos]].unit);
+			lcD->setCursor(n_cols-strlen(PICKER_unit),header_lines+cursor_pos);
+			lcD->print(PICKER_unit);
 			
 			if(setup_mode==0){
 				//Checks if the number fits withing the gap available
-				//if (n_cols-pick[pick_pos[cursor_pos]].picker_name.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].value,pick[pick_pos[cursor_pos]].decimals)-1-pick[pick_pos[cursor_pos]].unit.length()>=0){
-				lcD->setCursor(n_cols-pick[pick_pos[cursor_pos]].unit.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].value,pick[pick_pos[cursor_pos]].decimals),header_lines+cursor_pos);
-				lcD->print(round_n(pick[pick_pos[cursor_pos]].value,pick[pick_pos[cursor_pos]].decimals),pick[pick_pos[cursor_pos]].decimals);
+				//if (n_cols-pick[pick_pos[cursor_pos]].picker_name.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals)-1-strlen(PICKER_unit)>=0){
+				lcD->setCursor(n_cols-strlen(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals),header_lines+cursor_pos);
+				lcD->print(round_n(pick[pick_pos[cursor_pos]].value,PICKER_decimals),PICKER_decimals);
 				/* }
 				//if the numberr is bigger it divides by 1000 and adds a K
-				else if (n_cols-pick[pick_pos[cursor_pos]].picker_name.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].value,pick[pick_pos[cursor_pos]].decimals)-1-pick[pick_pos[cursor_pos]].unit.length()<0){
+				else if (n_cols-pick[pick_pos[cursor_pos]].picker_name.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals)-1-strlen(PICKER_unit)<0){
 				} */
 			}
 			else{
-				//Serial.println(num_disp_length(pick[pick_pos[cursor_pos]].new_value,pick[pick_pos[cursor_pos]].decimals));
-				lcD->setCursor(n_cols-pick[pick_pos[cursor_pos]].unit.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,pick[pick_pos[cursor_pos]].decimals),header_lines+cursor_pos);
-				lcD->print(round_n(pick[pick_pos[cursor_pos]].new_value,pick[pick_pos[cursor_pos]].decimals),pick[pick_pos[cursor_pos]].decimals);
+				//Serial.println(num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals));
+				lcD->setCursor(n_cols-strlen(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),header_lines+cursor_pos);
+				lcD->print(round_n(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),PICKER_decimals);
 			}
 	 break;
 	 }
      for (int i=0;i<min(n_rows-header_lines,n_pickers);i++){
 		 	  
 		 lcD->setCursor(0,i+header_lines);
-		 lcD->print(pick[pick_pos[i]].picker_name);
+		 lcD->print(PICKER_name);
 	 }
 	 if (header_lines>0){
 		lcD->setCursor(0,0);
-		lcD->print(header);
+		lcD->print(MENU_Header);
 
 	 }
 	 
@@ -241,7 +247,7 @@ void Menu::check_button(void){
 		uint8_t set_type=SET->type();
 		uint8_t back_type=BACK->type();
 		uint8_t next_type=NEXT->type();
-		//  Serial.print("UP type: ");
+		// Serial.print("UP type: ");
 		// Serial.println(up_type);
 		// Serial.print("DOWN type: ");
 		// Serial.println(down_type);
@@ -251,7 +257,7 @@ void Menu::check_button(void){
 		
 		//blink routine//
 		unsigned long t=millis();
-		if(setup_mode==1 && abs(t-t_old)>pick[pick_pos[cursor_pos]].tblink && pick[pick_pos[cursor_pos]].mode==3){
+		if(setup_mode==1 && abs(t-t_old)>PICKER_tblink && PICKER_mode==3){
 			
 			/* Serial.print("BLINK: ");
 			Serial.println(pick[pick_pos[cursor_pos]].blink);
@@ -260,18 +266,18 @@ void Menu::check_button(void){
 			pick[pick_pos[cursor_pos]].blink=!pick[pick_pos[cursor_pos]].blink;
 			t_old=t;
 			if(pick[pick_pos[cursor_pos]].blink==1){
-				//Serial.println(num_disp_length(pick[pick_pos[cursor_pos]].new_value,pick[pick_pos[cursor_pos]].decimals));
-				lcD->setCursor(n_cols-pick[pick_pos[cursor_pos]].unit.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,pick[pick_pos[cursor_pos]].decimals),header_lines+cursor_pos);
-				lcD->print(round_n(pick[pick_pos[cursor_pos]].new_value,pick[pick_pos[cursor_pos]].decimals),pick[pick_pos[cursor_pos]].decimals);
+				//Serial.println(num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals));
+				lcD->setCursor(n_cols-strlen(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),header_lines+cursor_pos);
+				lcD->print(round_n(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),PICKER_decimals);
 		
 			}
 			if(pick[pick_pos[cursor_pos]].blink==0){
 				int n_dig=n_digit(pick[pick_pos[cursor_pos]].new_value);
 				String empty;
-				for (int i=0;i<num_disp_length(pick[pick_pos[cursor_pos]].new_value,pick[pick_pos[cursor_pos]].decimals);i++){
+				for (int i=0;i<num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals);i++){
 					empty=empty+" ";
 				}
-				lcD->setCursor(n_cols-pick[pick_pos[cursor_pos]].unit.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,pick[pick_pos[cursor_pos]].decimals),header_lines+cursor_pos);
+				lcD->setCursor(n_cols-strlen(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),header_lines+cursor_pos);
 				lcD->print(empty);
 			}
 
@@ -288,9 +294,9 @@ void Menu::check_button(void){
 				}
 			}
 			else{ 
-				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value+pick[pick_pos[cursor_pos]].inc_short;
-				if (pick[pick_pos[cursor_pos]].new_value>pick[pick_pos[cursor_pos]].max_value){
-					pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].max_value;
+				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value+PICKER_inc_short;
+				if (pick[pick_pos[cursor_pos]].new_value>PICKER_max_value){
+					pick[pick_pos[cursor_pos]].new_value=PICKER_max_value;
 				}
 
 			}
@@ -299,9 +305,9 @@ void Menu::check_button(void){
 		}
 		if (up_type==2){
 			if(setup_mode==1){
-				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value+pick[pick_pos[cursor_pos]].inc_long;
-				if (pick[pick_pos[cursor_pos]].new_value>pick[pick_pos[cursor_pos]].max_value){
-					pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].max_value;
+				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value+PICKER_inc_long;
+				if (pick[pick_pos[cursor_pos]].new_value>PICKER_max_value){
+					pick[pick_pos[cursor_pos]].new_value=PICKER_max_value;
 				}
 
 			}
@@ -317,9 +323,9 @@ void Menu::check_button(void){
 				}
 			}
 			else{ 
-				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value-pick[pick_pos[cursor_pos]].inc_short;
-				if (pick[pick_pos[cursor_pos]].new_value<pick[pick_pos[cursor_pos]].min_value){
-					pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].min_value;
+				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value-PICKER_inc_short;
+				if (pick[pick_pos[cursor_pos]].new_value<PICKER_min_value){
+					pick[pick_pos[cursor_pos]].new_value=PICKER_min_value;
 				}
 
 			}
@@ -328,9 +334,9 @@ void Menu::check_button(void){
 		}	
 		if (down_type==2){
 			if(setup_mode==1){
-				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value-pick[pick_pos[cursor_pos]].inc_long;
-				if (pick[pick_pos[cursor_pos]].new_value<pick[pick_pos[cursor_pos]].min_value){
-					pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].min_value;
+				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value-PICKER_inc_long;
+				if (pick[pick_pos[cursor_pos]].new_value<PICKER_min_value){
+					pick[pick_pos[cursor_pos]].new_value=PICKER_min_value;
 				}
 
 			}
@@ -339,7 +345,7 @@ void Menu::check_button(void){
 		switch (navigation_mode) {
 			case 4:
 				if (set_type==1){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								if (pick[pick_pos[cursor_pos]].child!=0){
 									active=0;
@@ -365,7 +371,7 @@ void Menu::check_button(void){
 					Panel->print_menu();				
 				}
 				if (set_type==2){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								break;
 						case 2:
@@ -390,7 +396,7 @@ void Menu::check_button(void){
 				Panel->print_menu();				
 			}
 				if (back_type==1){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								if (pick[pick_pos[cursor_pos]].parent!=0){
 									active=0;
@@ -425,7 +431,7 @@ void Menu::check_button(void){
 					Panel->print_menu();				
 				}
 				if (back_type==2){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:						
 								break;
 						case 2:
@@ -439,7 +445,7 @@ void Menu::check_button(void){
 			break;
 			case 5:
 				if (set_type==1){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								break;
 						case 2:
@@ -466,7 +472,7 @@ void Menu::check_button(void){
 					Panel->print_menu();				
 				}
 				if (set_type==2){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								break;
 						case 2:
@@ -480,7 +486,7 @@ void Menu::check_button(void){
 				Panel->print_menu();				
 			}
 				if (next_type==1){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								if (pick[pick_pos[cursor_pos]].child!=0){
 									active=0;
@@ -498,7 +504,7 @@ void Menu::check_button(void){
 					Panel->print_menu();				
 				}
 				if (next_type==2){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								if (pick[pick_pos[cursor_pos]].child!=0){
 									active=0;
@@ -516,7 +522,7 @@ void Menu::check_button(void){
 					Panel->print_menu();				
 			}
 				if (back_type==1){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								if (pick[pick_pos[cursor_pos]].parent!=0){
 									active=0;
@@ -551,7 +557,7 @@ void Menu::check_button(void){
 					Panel->print_menu();				
 				}
 				if (back_type==2){
-					switch(pick[pick_pos[cursor_pos]].mode){
+					switch(PICKER_mode){
 						case 1:
 								if (pick[pick_pos[cursor_pos]].parent!=0){
 									active=0;

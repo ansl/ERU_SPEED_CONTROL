@@ -285,7 +285,7 @@ void loop() {
 			}
 
 		Serial.print("T:");
-		Serial.print(M211.pick[0].value);
+		Serial.print(M110.pick[0].value);
 		Serial.print("rpm V:");
 		Serial.print(v);
 		Serial.print("rpm PWM:");

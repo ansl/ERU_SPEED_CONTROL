@@ -92,7 +92,7 @@ class Picker {
 	  //
       Menu *child; // address of hte Child menu
 	  Menu *parent; // address of hte Parent menu
-	//   bool EEPROM_ACTIVE;
+	  bool EEPROM_ACTIVE;
 	//   uint8_t EEPROM_ADDR;
 	  uint8_t ref;
    //private:

@@ -138,7 +138,7 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
 #endif
 
-const char* const M_Header_table[] PROGMEM = {M1_HEADER,
+const PROGMEM char* const M_Header_table[] = {M1_HEADER,
                                                 M11_HEADER,
                                                     M110_HEADER, M111_HEADER, M112_HEADER, 
                                                 M12_HEADER
