@@ -175,6 +175,36 @@ const char* const M_Picker_name_table[] PROGMEM = {M1_PICKER_name_0,
                                                     M1_PICKER_name_3
                                             };
 
+const char* const M_Picker_state_string0_table[] PROGMEM = {M1_PICKER_state_string0_0,
+                                                    nullptr,
+                                                         nullptr,
+                                                            nullptr,
+                                                         nullptr,
+                                                            nullptr,
+                                                         nullptr,
+                                                            nullptr,
+                                                    nullptr,
+                                                         nullptr,
+                                                         nullptr,
+                                                         nullptr,
+                                                         nullptr,
+                                                    nullptr
+                                            };
+const char* const M_Picker_state_string1_table[] PROGMEM = {M1_PICKER_state_string1_0,
+                                                    nullptr,
+                                                         nullptr,
+                                                            nullptr,
+                                                         nullptr,
+                                                            nullptr,
+                                                         nullptr,
+                                                            nullptr,
+                                                    nullptr,
+                                                         nullptr,
+                                                         nullptr,
+                                                         nullptr,
+                                                    M1_PICKER_state_string1_3
+                                            };
+
 const uint8_t* const M_Picker_decimals_table[] PROGMEM = {nullptr,
                                                     nullptr,
                                                          nullptr,
