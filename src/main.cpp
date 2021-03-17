@@ -284,13 +284,13 @@ void loop() {
 			// break;
 			}
 
-		Serial.print("T:");
-		Serial.print(M110.pick[0].value);
-		Serial.print("rpm V:");
-		Serial.print(v);
-		Serial.print("rpm PWM:");
-		Serial.print(pwm_target);
-		Serial.println("");
+		// Serial.print("T:");
+		// Serial.print(M110.pick[0].value);
+		// Serial.print("rpm V:");
+		// Serial.print(v);
+		// Serial.print("rpm PWM:");
+		// Serial.print(pwm_target);
+		// Serial.println("");
 	#endif
 	#ifndef LCD_ACTIVE
 		pwm_target=PID1.Evaluate(v,v_target);

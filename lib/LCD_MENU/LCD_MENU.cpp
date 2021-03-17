@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
- #include "MENU_DEF.h"
+//  #include "MENU_DEF.h"
 //#include <EEPROM.h>
 
 contact::contact(uint8_t pin,uint16_t dbounce,uint16_t short_pulse,uint16_t long_pulse){
@@ -167,25 +167,33 @@ Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_
 
 void Menu::print_menu(){
 
+Serial.println("MENU SETTINGS:");
 	strcpy_P(MENU_Header, (char*)pgm_read_word(&(M_Header_table[menu_ref])));
 Serial.println(MENU_Header);
-Serial.println(strlen(MENU_Header));
-  	PICKER_mode=(uint8_t)pgm_read_byte(M_Picker_mode_table[pick[pick_pos[cursor_pos]].ref]);
-	  
-Serial.println(pick[pick_pos[cursor_pos]].ref);
-Serial.println(PICKER_mode,BIN);
-
-	strcpy_P(PICKER_name, (char*)pgm_read_word(&(M_Picker_name_table[pick[pick_pos[cursor_pos]].ref])));
+	PICKER_mode=pgm_read_byte(&M_Picker_mode_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_mode);
+	// strcpy_P(PICKER_name, (char*)pgm_read_word(&(M_Picker_name_table[pick[pick_pos[cursor_pos]].ref])));
+Serial.println(PICKER_name);
 	strcpy_P(PICKER_state_string0, (char*)pgm_read_word(&(M_Picker_state_string0_table[pick[pick_pos[cursor_pos]].ref])));
+Serial.println(PICKER_state_string0);
 	strcpy_P(PICKER_state_string1, (char*)pgm_read_word(&(M_Picker_state_string1_table[pick[pick_pos[cursor_pos]].ref])));
-	PICKER_decimals=pgm_read_byte(M_Picker_decimals_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_state_string1);
+	PICKER_decimals=pgm_read_byte(&M_Picker_decimals_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_decimals);
 	strcpy_P(PICKER_unit, (char*)pgm_read_word(&(M_Picker_unit_table[pick[pick_pos[cursor_pos]].ref])));
-	PICKER_min_value=pgm_read_float(M_Picker_min_value_table[pick[pick_pos[cursor_pos]].ref]);
-	PICKER_max_value=pgm_read_float(M_Picker_max_value_table[pick[pick_pos[cursor_pos]].ref]);
-	PICKER_inc_short=pgm_read_word(M_Picker_inc_short_table[pick[pick_pos[cursor_pos]].ref]);
-	PICKER_inc_long=pgm_read_word(M_Picker_inc_long_table[pick[pick_pos[cursor_pos]].ref]);
-	PICKER_tblink=pgm_read_word(M_Picker_tblink_table[pick[pick_pos[cursor_pos]].ref]);
-	PICKER_EEPROM_ADDR=pgm_read_word(M_Picker_EEPROM_ADDR_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_unit);
+	PICKER_min_value=pgm_read_float(&M_Picker_min_value_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_min_value);
+	PICKER_max_value=pgm_read_float(&M_Picker_max_value_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_max_value);
+	PICKER_inc_short=pgm_read_word(&M_Picker_inc_short_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_inc_short);
+	PICKER_inc_long=pgm_read_word(&M_Picker_inc_long_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_inc_long);
+	PICKER_tblink=pgm_read_word(&M_Picker_tblink_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_tblink);
+	PICKER_EEPROM_ADDR=pgm_read_word(&M_Picker_EEPROM_ADDR_table[pick[pick_pos[cursor_pos]].ref]);
+Serial.println(PICKER_EEPROM_ADDR);
 
 
 	 lcD->clear();
@@ -227,7 +235,7 @@ Serial.println(PICKER_mode,BIN);
 	 break;
 	 }
      for (int i=0;i<min(n_rows-header_lines,n_pickers);i++){
-		 	  
+		 strcpy_P(PICKER_name, (char*)pgm_read_word(&(M_Picker_name_table[pick[pick_pos[i]].ref])));
 		 lcD->setCursor(0,i+header_lines);
 		 lcD->print(PICKER_name);
 	 }
