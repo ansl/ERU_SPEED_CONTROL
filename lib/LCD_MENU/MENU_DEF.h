@@ -21,20 +21,20 @@
 //     const uint8_t PROGMEM M1_PICKER_EEPROM_ADDR_0 = 0;
 /////////////////////////////////////////////////////////////////
 
-static char MENU_Header[20];
-static uint8_t PICKER_mode;
-static char PICKER_name[15];
-static char PICKER_state_string0[10];
-static char PICKER_state_string1[10];
-static uint8_t PICKER_decimals;
-static char PICKER_unit[3];
-static float PICKER_min_value;
-static float PICKER_max_value;
-static uint16_t PICKER_inc_short;
-static uint16_t PICKER_inc_long;
-static uint16_t PICKER_tblink;
-static uint8_t PICKER_EEPROM_ADDR;
-static char null[]="";
+char MENU_Header[20];
+uint8_t PICKER_mode;
+char PICKER_name[15];
+char PICKER_state_string0[10];
+char PICKER_state_string1[10];
+uint8_t PICKER_decimals;
+char PICKER_unit[3];
+float PICKER_min_value;
+float PICKER_max_value;
+uint16_t PICKER_inc_short;
+uint16_t PICKER_inc_long;
+uint16_t PICKER_tblink;
+uint8_t PICKER_EEPROM_ADDR;
+char null[]="";
 
 const char PROGMEM M1_HEADER[]  = "ERU";
 
