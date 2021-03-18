@@ -38,7 +38,7 @@ static char null[]="";
 
 const char PROGMEM M1_HEADER[]  = "ERU";
 
-    const uint8_t PROGMEM M1_PICKER_mode_0 = 9;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
+    const uint8_t PROGMEM M1_PICKER_mode_0 = 2;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
     const char PROGMEM M1_PICKER_name_0[]  = "LIGHT"; 
     const char PROGMEM M1_PICKER_state_string0_0[]  = "OFF"; 
     const char PROGMEM M1_PICKER_state_string1_0[]  = "ON"; 

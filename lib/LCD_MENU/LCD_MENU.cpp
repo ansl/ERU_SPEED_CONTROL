@@ -169,31 +169,31 @@ void Menu::print_menu(){
 
 Serial.println("MENU SETTINGS:");
 	strcpy_P(MENU_Header, (char*)pgm_read_word(&(M_Header_table[menu_ref])));
-Serial.println(MENU_Header);
-	PICKER_mode=pgm_read_byte(&M_Picker_mode_table[pick[pick_pos[cursor_pos]].ref]);
+// Serial.println(MENU_Header);
+	PICKER_mode=(uint8_t)pgm_read_byte(&M_Picker_mode_table[pick[pick_pos[cursor_pos]].ref]);
 Serial.println(PICKER_mode);
 	// strcpy_P(PICKER_name, (char*)pgm_read_word(&(M_Picker_name_table[pick[pick_pos[cursor_pos]].ref])));
-Serial.println(PICKER_name);
+// Serial.println(PICKER_name);
 	strcpy_P(PICKER_state_string0, (char*)pgm_read_word(&(M_Picker_state_string0_table[pick[pick_pos[cursor_pos]].ref])));
-Serial.println(PICKER_state_string0);
+// Serial.println(PICKER_state_string0);
 	strcpy_P(PICKER_state_string1, (char*)pgm_read_word(&(M_Picker_state_string1_table[pick[pick_pos[cursor_pos]].ref])));
-Serial.println(PICKER_state_string1);
-	PICKER_decimals=pgm_read_byte(&M_Picker_decimals_table[pick[pick_pos[cursor_pos]].ref]);
-Serial.println(PICKER_decimals);
+// Serial.println(PICKER_state_string1);
+	PICKER_decimals=(uint8_t)pgm_read_byte(&M_Picker_decimals_table[pick[pick_pos[cursor_pos]].ref]);
+// Serial.println(PICKER_decimals);
 	strcpy_P(PICKER_unit, (char*)pgm_read_word(&(M_Picker_unit_table[pick[pick_pos[cursor_pos]].ref])));
-Serial.println(PICKER_unit);
+// Serial.println(PICKER_unit);
 	PICKER_min_value=pgm_read_float(&M_Picker_min_value_table[pick[pick_pos[cursor_pos]].ref]);
-Serial.println(PICKER_min_value);
+// Serial.println(PICKER_min_value);
 	PICKER_max_value=pgm_read_float(&M_Picker_max_value_table[pick[pick_pos[cursor_pos]].ref]);
-Serial.println(PICKER_max_value);
-	PICKER_inc_short=pgm_read_word(&M_Picker_inc_short_table[pick[pick_pos[cursor_pos]].ref]);
-Serial.println(PICKER_inc_short);
-	PICKER_inc_long=pgm_read_word(&M_Picker_inc_long_table[pick[pick_pos[cursor_pos]].ref]);
-Serial.println(PICKER_inc_long);
-	PICKER_tblink=pgm_read_word(&M_Picker_tblink_table[pick[pick_pos[cursor_pos]].ref]);
-Serial.println(PICKER_tblink);
-	PICKER_EEPROM_ADDR=pgm_read_word(&M_Picker_EEPROM_ADDR_table[pick[pick_pos[cursor_pos]].ref]);
-Serial.println(PICKER_EEPROM_ADDR);
+// Serial.println(PICKER_max_value);
+	PICKER_inc_short=(uint16_t)pgm_read_word(&M_Picker_inc_short_table[pick[pick_pos[cursor_pos]].ref]);
+// Serial.println(PICKER_inc_short);
+	PICKER_inc_long=(uint16_t)pgm_read_word(&M_Picker_inc_long_table[pick[pick_pos[cursor_pos]].ref]);
+// Serial.println(PICKER_inc_long);
+	PICKER_tblink=(uint16_t)pgm_read_word(&M_Picker_tblink_table[pick[pick_pos[cursor_pos]].ref]);
+// Serial.println(PICKER_tblink);
+	PICKER_EEPROM_ADDR=(uint8_t)pgm_read_byte(&M_Picker_EEPROM_ADDR_table[pick[pick_pos[cursor_pos]].ref]);
+// Serial.println(PICKER_EEPROM_ADDR);
 
 
 	 lcD->clear();
@@ -205,22 +205,28 @@ Serial.println(PICKER_EEPROM_ADDR);
 	 break;
 	 case 2:
 		 if (pick[pick_pos[cursor_pos]].state==0){
-			lcD->setCursor(strlen(PICKER_state_string0),header_lines+cursor_pos);
+			 Serial.println(PICKER_state_string0);
+			 Serial.println(strlen_P(PICKER_state_string0));
+			 Serial.println(strlen(PICKER_state_string0));
+			lcD->setCursor(strlen_P(PICKER_state_string0),header_lines+cursor_pos);
 			lcD->print(PICKER_state_string0);
 		 }
 		 else{
-			lcD->setCursor(strlen(PICKER_state_string1),header_lines+cursor_pos);
+			 Serial.println(PICKER_state_string1);
+			 Serial.println(strlen_P(PICKER_state_string1));
+			 Serial.println(strlen(PICKER_state_string1));
+			lcD->setCursor(strlen_P(PICKER_state_string1),header_lines+cursor_pos);
 			lcD->print(PICKER_state_string1);
 		 }
 	 break;
 	 case 3:
-			lcD->setCursor(n_cols-strlen(PICKER_unit),header_lines+cursor_pos);
+			lcD->setCursor(n_cols-strlen_P(PICKER_unit),header_lines+cursor_pos);
 			lcD->print(PICKER_unit);
 			
 			if(setup_mode==0){
 				//Checks if the number fits withing the gap available
 				//if (n_cols-pick[pick_pos[cursor_pos]].picker_name.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals)-1-strlen(PICKER_unit)>=0){
-				lcD->setCursor(n_cols-strlen(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals),header_lines+cursor_pos);
+				lcD->setCursor(n_cols-strlen_P(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals),header_lines+cursor_pos);
 				lcD->print(round_n(pick[pick_pos[cursor_pos]].value,PICKER_decimals),PICKER_decimals);
 				/* }
 				//if the numberr is bigger it divides by 1000 and adds a K
@@ -229,7 +235,7 @@ Serial.println(PICKER_EEPROM_ADDR);
 			}
 			else{
 				//Serial.println(num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals));
-				lcD->setCursor(n_cols-strlen(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),header_lines+cursor_pos);
+				lcD->setCursor(n_cols-strlen_P(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),header_lines+cursor_pos);
 				lcD->print(round_n(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),PICKER_decimals);
 			}
 	 break;
@@ -308,6 +314,7 @@ void Menu::check_button(void){
 				}
 
 			}
+			// Serial.print("cursor_pos:");
 			// Serial.println(cursor_pos);
 			print_menu();
 		}
@@ -337,6 +344,7 @@ void Menu::check_button(void){
 				}
 
 			}
+			// Serial.print("cursor_pos:");
 			// Serial.println(cursor_pos);
 			print_menu();
 		}	
