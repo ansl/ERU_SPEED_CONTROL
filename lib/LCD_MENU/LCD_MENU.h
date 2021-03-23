@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
-#include <MENU_DEF.h>
+// #include <MENU_DEF.h>
 
 
 class Menu;
@@ -39,6 +39,7 @@ class Menu {
 	  uint8_t menu_ref;
 	  uint8_t navigation_mode;//defines if it is a 4-5 buttons navigation mode
 	  bool event; //determines if there was an change in the menu
+	  bool menu_flag;
 	  uint8_t n_rows;
 	  uint8_t n_cols;
 	  
@@ -66,7 +67,6 @@ class Menu {
    private:
 
 };
-
 
 class Picker {
    public:
@@ -98,16 +98,16 @@ class Picker {
    //private:
 };
 
-// class Status_screen{
-// 	public:
-// 		Status_screen();
-// 		float Temp;
-// 		float Temp_max;
-// 		bool Temp_alarm;
-// 		int rpm_actual;
-// 		int rpm_target;
-		
-// };
+class Screen_saver{
+	public:
+		Screen_saver();
+		uint16_t t_refresh;
+		float Temp;
+		float Temp_max;
+		bool Temp_alarm;
+		int rpm_actual;
+		int rpm_target;	
+};
 
 int count_loop(int val, int max_val, int min_val);
 void init_array(int arr[],int size,int res);
@@ -124,6 +124,7 @@ float range_loop(float x, float _max_x,float _min_x,uint8_t decimals);
 int  num_disp_length (float val,uint8_t dig);
 int  num_disp_length (float val,int dig);
 int  num_disp_length (int val);
+
 
 extern Menu *Panel;
 

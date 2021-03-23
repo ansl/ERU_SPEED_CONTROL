@@ -1,8 +1,8 @@
-#include "LCD_MENU.h"
+#include <LCD_MENU.h>
 #include <Arduino.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
-//  #include "MENU_DEF.h"
+#include <MENU_DEF.h>
 //#include <EEPROM.h>
 
 contact::contact(uint8_t pin,uint16_t dbounce,uint16_t short_pulse,uint16_t long_pulse){
@@ -64,7 +64,6 @@ uint8_t contact::type(){
    
 	return type;
 };
-
 Picker::Picker(){
     //   picker_name=F("");
       pos=0;//initialied later when the menu constructor is called
@@ -97,7 +96,7 @@ Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_
 	 menu_ref=0;
 	 navigation_mode=4;//4 buttons navigation mode
 	 event=0;
-	 
+	 menu_flag=1;
 	 header_lines=n_header_lines;
     //  header=F("");
 	 
@@ -127,12 +126,12 @@ Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_
      };
 
 };
-
 Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_t up, uint8_t down, uint8_t set,uint8_t back,uint8_t next){
     
 	 menu_ref=0;
 	 navigation_mode=5;//5 buttons navigation mode
 	 event=0;
+	 menu_flag=1;
 	 
 	 header_lines=n_header_lines;
     //  header=F("");
@@ -166,35 +165,33 @@ Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_
 };
 
 void Menu::print_menu(){
-
-Serial.println("MENU SETTINGS:");
 	strcpy_P(MENU_Header, (char*)pgm_read_word(&(M_Header_table[menu_ref])));
-// Serial.println(MENU_Header);
 	PICKER_mode=(uint8_t)pgm_read_byte(&M_Picker_mode_table[pick[pick_pos[cursor_pos]].ref]);
-Serial.println(PICKER_mode);
-	// strcpy_P(PICKER_name, (char*)pgm_read_word(&(M_Picker_name_table[pick[pick_pos[cursor_pos]].ref])));
-// Serial.println(PICKER_name);
+	// strcpy_P(PICKER_name, (char*)pgm_read_word(&(M_Picker_name_table[pick[pick_pos[cursor_pos]].ref]))); /moved later to print all the pickers
 	strcpy_P(PICKER_state_string0, (char*)pgm_read_word(&(M_Picker_state_string0_table[pick[pick_pos[cursor_pos]].ref])));
-// Serial.println(PICKER_state_string0);
 	strcpy_P(PICKER_state_string1, (char*)pgm_read_word(&(M_Picker_state_string1_table[pick[pick_pos[cursor_pos]].ref])));
-// Serial.println(PICKER_state_string1);
 	PICKER_decimals=(uint8_t)pgm_read_byte(&M_Picker_decimals_table[pick[pick_pos[cursor_pos]].ref]);
-// Serial.println(PICKER_decimals);
 	strcpy_P(PICKER_unit, (char*)pgm_read_word(&(M_Picker_unit_table[pick[pick_pos[cursor_pos]].ref])));
-// Serial.println(PICKER_unit);
 	PICKER_min_value=pgm_read_float(&M_Picker_min_value_table[pick[pick_pos[cursor_pos]].ref]);
-// Serial.println(PICKER_min_value);
 	PICKER_max_value=pgm_read_float(&M_Picker_max_value_table[pick[pick_pos[cursor_pos]].ref]);
-// Serial.println(PICKER_max_value);
-	PICKER_inc_short=(uint16_t)pgm_read_word(&M_Picker_inc_short_table[pick[pick_pos[cursor_pos]].ref]);
-// Serial.println(PICKER_inc_short);
-	PICKER_inc_long=(uint16_t)pgm_read_word(&M_Picker_inc_long_table[pick[pick_pos[cursor_pos]].ref]);
-// Serial.println(PICKER_inc_long);
+	PICKER_inc_short=pgm_read_float(&M_Picker_inc_short_table[pick[pick_pos[cursor_pos]].ref]);
+	PICKER_inc_long=pgm_read_float(&M_Picker_inc_long_table[pick[pick_pos[cursor_pos]].ref]);
 	PICKER_tblink=(uint16_t)pgm_read_word(&M_Picker_tblink_table[pick[pick_pos[cursor_pos]].ref]);
-// Serial.println(PICKER_tblink);
 	PICKER_EEPROM_ADDR=(uint8_t)pgm_read_byte(&M_Picker_EEPROM_ADDR_table[pick[pick_pos[cursor_pos]].ref]);
-// Serial.println(PICKER_EEPROM_ADDR);
 
+// Serial.println("MENU SETTINGS:");
+// Serial.println(PICKER_mode);
+// Serial.println(PICKER_name);
+// Serial.println(PICKER_state_string0);
+// Serial.println(PICKER_state_string1);
+// Serial.println(PICKER_decimals);
+// Serial.println(PICKER_unit);
+// Serial.println(PICKER_min_value);
+// Serial.println(PICKER_max_value);
+// Serial.println(PICKER_inc_short);
+// Serial.println(PICKER_inc_long);
+// Serial.println(PICKER_tblink);
+// Serial.println(PICKER_EEPROM_ADDR);
 
 	 lcD->clear();
 	 lcD->setCursor(n_cols-1,header_lines+cursor_pos);
@@ -205,28 +202,24 @@ Serial.println(PICKER_mode);
 	 break;
 	 case 2:
 		 if (pick[pick_pos[cursor_pos]].state==0){
-			 Serial.println(PICKER_state_string0);
-			 Serial.println(strlen_P(PICKER_state_string0));
-			 Serial.println(strlen(PICKER_state_string0));
-			lcD->setCursor(strlen_P(PICKER_state_string0),header_lines+cursor_pos);
+			// Serial.println(PICKER_state_string0);
+			lcD->setCursor(n_cols-strlen(PICKER_state_string0),header_lines+cursor_pos);
 			lcD->print(PICKER_state_string0);
 		 }
 		 else{
-			 Serial.println(PICKER_state_string1);
-			 Serial.println(strlen_P(PICKER_state_string1));
-			 Serial.println(strlen(PICKER_state_string1));
-			lcD->setCursor(strlen_P(PICKER_state_string1),header_lines+cursor_pos);
+			// Serial.println(PICKER_state_string1);
+			lcD->setCursor(n_cols-strlen(PICKER_state_string1),header_lines+cursor_pos);
 			lcD->print(PICKER_state_string1);
 		 }
 	 break;
 	 case 3:
-			lcD->setCursor(n_cols-strlen_P(PICKER_unit),header_lines+cursor_pos);
+			lcD->setCursor(n_cols-strlen(PICKER_unit),header_lines+cursor_pos);
 			lcD->print(PICKER_unit);
 			
 			if(setup_mode==0){
 				//Checks if the number fits withing the gap available
 				//if (n_cols-pick[pick_pos[cursor_pos]].picker_name.length()-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals)-1-strlen(PICKER_unit)>=0){
-				lcD->setCursor(n_cols-strlen_P(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals),header_lines+cursor_pos);
+				lcD->setCursor(n_cols-strlen(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].value,PICKER_decimals),header_lines+cursor_pos);
 				lcD->print(round_n(pick[pick_pos[cursor_pos]].value,PICKER_decimals),PICKER_decimals);
 				/* }
 				//if the numberr is bigger it divides by 1000 and adds a K
@@ -235,7 +228,7 @@ Serial.println(PICKER_mode);
 			}
 			else{
 				//Serial.println(num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals));
-				lcD->setCursor(n_cols-strlen_P(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),header_lines+cursor_pos);
+				lcD->setCursor(n_cols-strlen(PICKER_unit)-1-num_disp_length(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),header_lines+cursor_pos);
 				lcD->print(round_n(pick[pick_pos[cursor_pos]].new_value,PICKER_decimals),PICKER_decimals);
 			}
 	 break;
@@ -250,10 +243,9 @@ Serial.println(PICKER_mode);
 		lcD->print(MENU_Header);
 
 	 }
-	 
-	 
 
 };
+
 void Menu::check_button(void){
 		event=0;
 		uint8_t up_type=UP->type();
@@ -261,6 +253,20 @@ void Menu::check_button(void){
 		uint8_t set_type=SET->type();
 		uint8_t back_type=BACK->type();
 		uint8_t next_type=NEXT->type();
+
+		// Serial.println((up_type+down_type+set_type+back_type+next_type));
+		if ((up_type+down_type+set_type+back_type+next_type)>0){
+			t_last_button_input=millis();
+			menu_flag=1;
+		}
+		
+		if((millis()-t_last_button_input)<screen_saver_delay){
+			menu_flag=1;
+		}
+		else{
+			menu_flag=0;
+		}
+
 		// Serial.print("UP type: ");
 		// Serial.println(up_type);
 		// Serial.print("DOWN type: ");
@@ -268,7 +274,8 @@ void Menu::check_button(void){
 		// Serial.print("SET type: ");
 		// Serial.println(set_type);
 		
-		
+		//print menu
+
 		//blink routine//
 		unsigned long t=millis();
 		if(setup_mode==1 && abs(t-t_old)>PICKER_tblink && PICKER_mode==3){
@@ -308,6 +315,10 @@ void Menu::check_button(void){
 				}
 			}
 			else{ 
+				Serial.println(pick[pick_pos[cursor_pos]].new_value);
+				Serial.println(PICKER_inc_short);
+				Serial.println(pick[pick_pos[cursor_pos]].new_value+PICKER_inc_short);
+
 				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value+PICKER_inc_short;
 				if (pick[pick_pos[cursor_pos]].new_value>PICKER_max_value){
 					pick[pick_pos[cursor_pos]].new_value=PICKER_max_value;
@@ -316,7 +327,8 @@ void Menu::check_button(void){
 			}
 			// Serial.print("cursor_pos:");
 			// Serial.println(cursor_pos);
-			print_menu();
+			// print_menu();
+			Panel->event=1;
 		}
 		if (up_type==2){
 			if(setup_mode==1){
@@ -326,7 +338,8 @@ void Menu::check_button(void){
 				}
 
 			}
-			print_menu();
+			// print_menu();
+			Panel->event=1;
 		}		
 		if (down_type==1){
 			if(setup_mode==0){
@@ -346,7 +359,8 @@ void Menu::check_button(void){
 			}
 			// Serial.print("cursor_pos:");
 			// Serial.println(cursor_pos);
-			print_menu();
+			// print_menu();
+			Panel->event=1;
 		}	
 		if (down_type==2){
 			if(setup_mode==1){
@@ -356,7 +370,8 @@ void Menu::check_button(void){
 				}
 
 			}
-			print_menu();
+			// print_menu();
+			Panel->event=1;
 		}		
 		switch (navigation_mode) {
 			case 4:
@@ -384,7 +399,7 @@ void Menu::check_button(void){
 						case 3:
 								break;		
 					}
-					Panel->print_menu();				
+					// Panel->print_menu();				
 				}
 				if (set_type==2){
 					switch(PICKER_mode){
@@ -409,7 +424,7 @@ void Menu::check_button(void){
 								}
 								break;		
 					}			
-				Panel->print_menu();				
+				// Panel->print_menu();				
 			}
 				if (back_type==1){
 					switch(PICKER_mode){
@@ -420,7 +435,7 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									//event=1;
+									event=1;
 								}
 								break;
 						case 2:
@@ -430,7 +445,7 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									//event=1;
+									event=1;
 								}
 								break;
 						case 3:
@@ -440,11 +455,11 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									//event=1;
+									event=1;
 								}
 								break;		
 					}			
-					Panel->print_menu();				
+					// Panel->print_menu();				
 				}
 				if (back_type==2){
 					switch(PICKER_mode){
@@ -455,9 +470,8 @@ void Menu::check_button(void){
 						case 3:
 								break;		
 					}			
-					Panel->print_menu();				
+					// Panel->print_menu();				
 				}
-
 			break;
 			case 5:
 				if (set_type==1){
@@ -485,7 +499,7 @@ void Menu::check_button(void){
 								}
 								break;			
 					}
-					Panel->print_menu();				
+					// Panel->print_menu();				
 				}
 				if (set_type==2){
 					switch(PICKER_mode){
@@ -499,7 +513,7 @@ void Menu::check_button(void){
 								setup_mode=0;
 								break;		
 				}			
-				Panel->print_menu();				
+				// Panel->print_menu();				
 			}
 				if (next_type==1){
 					switch(PICKER_mode){
@@ -508,7 +522,7 @@ void Menu::check_button(void){
 									active=0;
 									//reset_value();
 									Panel=pick[pick_pos[cursor_pos]].child;
-									event=1;
+									Panel->event=1;
 									Panel->active=1;
 								}
 								break;
@@ -517,7 +531,7 @@ void Menu::check_button(void){
 						case 3:
 								break;		
 					}
-					Panel->print_menu();				
+					// Panel->print_menu();				
 				}
 				if (next_type==2){
 					switch(PICKER_mode){
@@ -526,7 +540,7 @@ void Menu::check_button(void){
 									active=0;
 									//reset_value();
 									Panel=pick[pick_pos[cursor_pos]].child;
-									event=1;
+									Panel->event=1;
 									Panel->active=1;
 								}
 								break;
@@ -535,7 +549,7 @@ void Menu::check_button(void){
 						case 3:
 								break;		
 					}			
-					Panel->print_menu();				
+					// Panel->print_menu();				
 			}
 				if (back_type==1){
 					switch(PICKER_mode){
@@ -546,7 +560,7 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									event=1;
+									Panel->event=1;
 								}
 								break;
 						case 2:
@@ -556,7 +570,7 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									event=1;
+									Panel->event=1;
 								}
 								break;
 						case 3:
@@ -566,11 +580,11 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									event=1;
+									Panel->event=1;
 								}
 								break;		
 					}			
-					Panel->print_menu();				
+					// Panel->print_menu();				
 				}
 				if (back_type==2){
 					switch(PICKER_mode){
@@ -581,7 +595,7 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									event=1;
+									Panel->event=1;
 								}
 								break;
 						case 2:
@@ -591,7 +605,7 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									event=1;
+									Panel->event=1;
 								}
 								break;
 						case 3:
@@ -601,14 +615,15 @@ void Menu::check_button(void){
 									setup_mode=0;
 									Panel=pick[pick_pos[cursor_pos]].parent;
 									Panel->active=1;
-									event=1;
+									Panel->event=1;
 								}
 								break;				
 					}			
-					Panel->print_menu();				
+					// Panel->print_menu();				
 				}
 			break;
 		};
+	// Serial.println(event);
 };
 void Menu::disable_all(void){
 	for (uint8_t i=0;i<n_pickers;i++){
@@ -622,6 +637,17 @@ void Menu::reset_value(void){
 	}
 	
 }
+
+
+Screen_saver::Screen_saver(){
+		t_refresh=0;
+		float Temp;
+		float Temp_max;
+		bool Temp_alarm;
+		int rpm_actual;
+		int rpm_target;	
+};
+
 
 void init_array(int arr[],int size,int res){
     //int n = sizeof(arr) / sizeof(int);
@@ -727,6 +753,5 @@ float range_loop(float x, float _max_x,float _min_x,uint8_t decimals){
 	  else { return round_n(x,decimals);}
 }
 
-// predefined global entities 
 
 Menu *Panel;

@@ -236,11 +236,16 @@ void setup() {
 		    M1.pick[2].child=&M12;
 
 			M11.pick[0].parent=&M1;
+			M11.pick[1].parent=&M1;
+			M11.pick[2].parent=&M1;
 				M110.pick[0].parent=&M11;
 				M111.pick[0].parent=&M11;
 				M112.pick[0].parent=&M11;
 			M12.pick[0].parent=&M1;
-			
+			M12.pick[1].parent=&M1;
+			M12.pick[2].parent=&M1;
+			M12.pick[3].parent=&M1;
+
 			Panel=&M1; //inicializo en panel principal
 			Panel->print_menu();
 	#endif
@@ -263,6 +268,15 @@ void setup() {
 void loop() {
     #ifdef LCD_ACTIVE
    		Panel->check_button();
+		   if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
+			Serial.print("trigger");
+			Panel->print_menu();
+		   }else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
+		   {
+			    lcd.clear();
+				lcd.setCursor(0,0);
+				lcd.print("hola tiiiio") ;
+		   }
 		// if (Panel->event==1){
 		// 	if(Panel->pick[0].ref>0 && Panel->pick[0].enabled==1){
 		// 		power_mode=Panel->pick[0].ref;
