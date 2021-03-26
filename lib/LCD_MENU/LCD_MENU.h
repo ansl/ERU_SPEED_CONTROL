@@ -17,7 +17,6 @@ class contact
 		uint8_t type(void);
 
   private:
-
 	unsigned long _t_pulse_start;
 	unsigned long _t_long_end;
   	uint8_t _pin;
@@ -35,6 +34,7 @@ class Menu {
       void print_menu(void);
 	  void disable_all(void); //disables all the pickers picker.enabled=0
 	  void reset_value(void); //reset the picker.Value=0
+	  
 
 	  uint8_t menu_ref;
 	  uint8_t navigation_mode;//defines if it is a 4-5 buttons navigation mode
@@ -72,6 +72,7 @@ class Picker {
    public:
       Picker();
       void print_picker(void);
+	  void get_val_EEPROM(void);
     //   String picker_name; //Picker name
       uint8_t pos;//position in the menu list
     //   uint8_t mode; //default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
@@ -100,13 +101,14 @@ class Picker {
 
 class Screen_saver{
 	public:
-		Screen_saver();
+		Screen_saver(LiquidCrystal_I2C *LCD);
+		void print(uint8_t power_mode,float Tmp,float Tmp_max,float rpm_a,float rpm_t,bool light_state,bool cool_state);
+		void Src_svr_print_dynamic(float Tmp,float Tmp_max,bool Tmp_alarm,float rmp_a,float rpm_t);
 		uint16_t t_refresh;
-		float Temp;
-		float Temp_max;
+		uint32_t t_last;
 		bool Temp_alarm;
-		int rpm_actual;
-		int rpm_target;	
+		LiquidCrystal_I2C *lcD;	
+		char SS_buff[21];
 };
 
 int count_loop(int val, int max_val, int min_val);

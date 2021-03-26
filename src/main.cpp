@@ -40,7 +40,7 @@
 #include <PWM_READ.h>
 #include <LCD_MENU.h>
 #include <PID.h>
-
+#include <EEPROM.h>
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //DEFINES
@@ -67,6 +67,7 @@
 	LiquidCrystal_I2C lcd(0x27, max_char, max_row);
 	uint8_t next[8] = {0x0, 0x0, 0x4, 0x2, 0x1f, 0x2, 0x4, 0x0};
 	uint8_t lght[8] = {0b00100, 0b10101, 0b01110, 0b11111, 0b01110, 0b10101, 0b00100, 0b00000};
+	uint8_t cool[8] = {B01110, B01110, B11111, B11111, B00100, B01110, B10101, B00100};
 #endif // !LCD_ACTIVE
 
 // PID #############################################################
@@ -84,6 +85,8 @@ PID PID1(0.01, 20 ,0, 1800, minPWM, maxPWM, 50);
 		Menu M12(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	
 #endif
+// //SCREEN SAVER#############################################################
+	Screen_saver SrcSvr(&lcd);
 //Variables#############################################################
 
 volatile int n=0;
@@ -100,7 +103,7 @@ float T=1024 / 16000000.0;//0.000064;	//6.4e-5s
 float buff=255;
 float Tc=T*(buff+1);
 
-uint8_t power_mode=1; //0: no power mode 1:PID 2:EXT PWM 3:%Power
+uint8_t power_mode=3; //0: no power mode 3:PID 5:EXT PWM 7:%Power
 
 void setup() {
   // put your setup code here, to run once:
@@ -190,12 +193,14 @@ void setup() {
 			// Serial.println(F("init"));
 			lcd.clear();
 			lcd.backlight();  //open the backlight
-			lcd.createChar(0, next);
+
 			lcd.setCursor(0,0);
 			lcd.print(F("ERU Project 4.0"));
 			lcd.setCursor(0,1);
 			lcd.print(F("AntS 2021"));
 			lcd.createChar(0,next);
+			lcd.createChar(1,lght);
+			lcd.createChar(2,cool);
 			delay(2000);
 
 			lcd.clear();
@@ -222,9 +227,17 @@ void setup() {
 			// CONFIG
 			M1.pick[2].ref=8;
 				M12.pick[0].ref=9;
+				M12.pick[0].EEPROM_ACTIVE=1;
+				M12.pick[0].get_val_EEPROM();
 				M12.pick[1].ref=10;
+				M12.pick[1].EEPROM_ACTIVE=1;
+				M12.pick[1].get_val_EEPROM();
 				M12.pick[2].ref=11;
+				M12.pick[2].EEPROM_ACTIVE=1;
+				M12.pick[2].get_val_EEPROM();
 				M12.pick[3].ref=12;
+				M12.pick[3].EEPROM_ACTIVE=1;
+				M12.pick[3].get_val_EEPROM();
 			// COOLANT
 			M1.pick[3].ref=13;
 
@@ -267,35 +280,32 @@ void setup() {
 
 void loop() {
     #ifdef LCD_ACTIVE
+	
    		Panel->check_button();
 		   if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
-			Serial.print("trigger");
-			Panel->print_menu();
+				Panel->print_menu();
+
+				uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref;
+				if (_ref==3 || _ref==5|| _ref==7){
+					power_mode=_ref;
+				}
 		   }else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
 		   {
-			    lcd.clear();
-				lcd.setCursor(0,0);
-				lcd.print("hola tiiiio") ;
+			    SrcSvr.print(power_mode,23.7,M12.pick[3].value,v,M110.pick[0].value,M1.pick[0].state,M1.pick[3].state);
 		   }
-		// if (Panel->event==1){
-		// 	if(Panel->pick[0].ref>0 && Panel->pick[0].enabled==1){
-		// 		power_mode=Panel->pick[0].ref;
-		// 	}
-		// 	PID1.Param(M22.pick[0].value,M22.pick[1].value,M22.pick[2].value);
-		// }
 
 		switch (power_mode){
-			case 1:
+			case 3:
+				PID1.Param(M12.pick[0].value,M12.pick[1].value,M12.pick[2].value);
 				pwm_target=PID1.Evaluate(v,M110.pick[0].value);
-				// Panel->header=v;
-				// Panel->event=1;
-				// if (Panel->event==1) {Panel->print_menu(); Panel->event=0; delay(100);}
+
 				break;
-			// case 2:
-			// 	break;
-			// case 3:
-			//  	pwm_target=int(2200*M213.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
-			// break;
+			case 5:
+			 	//pwm_target=int(2200*M112.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
+			break;
+			case 7:
+			 	pwm_target=int(2200*M112.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
+			break;
 			}
 
 		// Serial.print("T:");

@@ -3,7 +3,9 @@
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
 #include <MENU_DEF.h>
-//#include <EEPROM.h>
+#ifndef EEPROM_h
+#include <EEPROM.h>
+#endif
 
 contact::contact(uint8_t pin,uint16_t dbounce,uint16_t short_pulse,uint16_t long_pulse){
 	_t_pulse_start=0;
@@ -90,6 +92,11 @@ Picker::Picker(){
 
       //Menu Sub_Menu(1);
 };
+void Picker::get_val_EEPROM(){
+	if(EEPROM_ACTIVE==1){
+		EEPROM.get((uint8_t)pgm_read_byte(&M_Picker_EEPROM_ADDR_table[ref]),value);
+	}
+}
 
 Menu::Menu(uint8_t n_pick, uint8_t n_header_lines, LiquidCrystal_I2C *LCD,uint8_t up, uint8_t down, uint8_t set,uint8_t back){
      
@@ -256,8 +263,16 @@ void Menu::check_button(void){
 
 		// Serial.println((up_type+down_type+set_type+back_type+next_type));
 		if ((up_type+down_type+set_type+back_type+next_type)>0){
+			if (menu_flag==0){
+				up_type=0;
+				down_type=0;
+				set_type=0;
+				back_type=0;
+				event=1;
+			}
 			t_last_button_input=millis();
 			menu_flag=1;
+
 		}
 		
 		if((millis()-t_last_button_input)<screen_saver_delay){
@@ -278,7 +293,7 @@ void Menu::check_button(void){
 
 		//blink routine//
 		unsigned long t=millis();
-		if(setup_mode==1 && abs(t-t_old)>PICKER_tblink && PICKER_mode==3){
+		if(setup_mode==1 && menu_flag==1 && abs(t-t_old)>PICKER_tblink && PICKER_mode==3){
 			
 			/* Serial.print("BLINK: ");
 			Serial.println(pick[pick_pos[cursor_pos]].blink);
@@ -315,9 +330,9 @@ void Menu::check_button(void){
 				}
 			}
 			else{ 
-				Serial.println(pick[pick_pos[cursor_pos]].new_value);
-				Serial.println(PICKER_inc_short);
-				Serial.println(pick[pick_pos[cursor_pos]].new_value+PICKER_inc_short);
+				// Serial.println(pick[pick_pos[cursor_pos]].new_value);
+				// Serial.println(PICKER_inc_short);
+				// Serial.println(pick[pick_pos[cursor_pos]].new_value+PICKER_inc_short);
 
 				pick[pick_pos[cursor_pos]].new_value=pick[pick_pos[cursor_pos]].new_value+PICKER_inc_short;
 				if (pick[pick_pos[cursor_pos]].new_value>PICKER_max_value){
@@ -397,6 +412,7 @@ void Menu::check_button(void){
 								event=1;
 								break;
 						case 3:
+								event=1;
 								break;		
 					}
 					// Panel->print_menu();				
@@ -404,8 +420,10 @@ void Menu::check_button(void){
 				if (set_type==2){
 					switch(PICKER_mode){
 						case 1:
+								event=1;
 								break;
 						case 2:
+								event=1;
 								break;
 						case 3:
 								setup_mode=!setup_mode;
@@ -463,11 +481,14 @@ void Menu::check_button(void){
 				}
 				if (back_type==2){
 					switch(PICKER_mode){
-						case 1:						
+						case 1:	
+								event=1;				
 								break;
 						case 2:
+								event=1;
 								break;
 						case 3:
+								event=1;
 								break;		
 					}			
 					// Panel->print_menu();				
@@ -477,6 +498,7 @@ void Menu::check_button(void){
 				if (set_type==1){
 					switch(PICKER_mode){
 						case 1:
+								event=1;
 								break;
 						case 2:
 								pick[pick_pos[cursor_pos]].state=!pick[pick_pos[cursor_pos]].state;
@@ -491,7 +513,7 @@ void Menu::check_button(void){
 								else {
 									pick[pick_pos[cursor_pos]].value=pick[pick_pos[cursor_pos]].new_value;
 									if (pick[pick_pos[cursor_pos]].EEPROM_ACTIVE==1){
-										//EEPROM.put(pick[pick_pos[cursor_pos]].EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
+										EEPROM.put(PICKER_EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
 									}
 									//pick[pick_pos[cursor_pos]].new_value=0;
 									pick[pick_pos[cursor_pos]].enabled=1;
@@ -504,8 +526,10 @@ void Menu::check_button(void){
 				if (set_type==2){
 					switch(PICKER_mode){
 						case 1:
+								event=1;
 								break;
 						case 2:
+								event=1;
 								break;
 						case 3:
 								reset_value();
@@ -527,8 +551,10 @@ void Menu::check_button(void){
 								}
 								break;
 						case 2:
+								event=1;
 								break;
 						case 3:
+								event=1;
 								break;		
 					}
 					// Panel->print_menu();				
@@ -545,8 +571,10 @@ void Menu::check_button(void){
 								}
 								break;
 						case 2:
+								event=1;
 								break;
 						case 3:
+								event=1;
 								break;		
 					}			
 					// Panel->print_menu();				
@@ -639,14 +667,85 @@ void Menu::reset_value(void){
 }
 
 
-Screen_saver::Screen_saver(){
-		t_refresh=0;
-		float Temp;
-		float Temp_max;
-		bool Temp_alarm;
-		int rpm_actual;
-		int rpm_target;	
-};
+Screen_saver::Screen_saver(LiquidCrystal_I2C *LCD){
+		t_refresh=500;
+		t_last=0;
+		lcD=LCD;
+}
+void Screen_saver::print(uint8_t power_mode,float Tmp,float Tmp_max,float rpm_a,float rpm_t,bool light_state,bool cool_state){
+char a[9];
+char b[4];
+	if((millis()-t_last)>=t_refresh){
+		t_last=millis();
+
+		if (light_state==1){
+			lcD->setCursor(lcD->_cols-1,0);
+			lcD->write(1);
+		}
+		else{
+			lcD->setCursor(lcD->_cols-1,0);
+			lcD->print(F(" "));
+		}
+		if (cool_state==1){
+			lcD->setCursor(lcD->_cols-2,0);
+			lcD->write(2);
+		}
+		else{
+			lcD->setCursor(lcD->_cols-2,0);
+			lcD->print(F(" "));
+		}
+		switch (power_mode){
+		 case 3:
+		 	lcD->setCursor(0,0);
+		    lcD->print(F("PID               "));//print  type of control
+			lcD->setCursor(0,1);
+			sprintf(SS_buff,"Actual:%10irpm",(long)rpm_a);//tst);
+						 //Serial.println(SS_buff);
+			lcD->print(SS_buff);
+			lcD->setCursor(0,2);
+			sprintf(SS_buff,"Target:%10irpm",(long)rpm_t);
+						 //Serial.println(SS_buff);
+			lcD->print(SS_buff);
+			lcD->setCursor(0,3);
+			dtostrf(Tmp, 8, 1,a);
+			dtostrf(Tmp_max, 2, 1,b);
+			sprintf(SS_buff,"Temp:%s/%s%cC",a,b,(char)223);
+						 //Serial.println(SS_buff);
+			lcD->print(SS_buff);
+			break;
+		case 5:
+			lcD->setCursor(0,0);
+		    lcD->print(F("EXT PWM           "));//print  type of control
+			lcD->setCursor(0,1);
+			sprintf(SS_buff,"Actual:%10irpm",(long)rpm_a);
+			lcD->print(SS_buff);
+			lcD->setCursor(0,2);
+			sprintf(SS_buff,"Target:%10irpm",(long)rpm_t);
+			lcD->print(SS_buff);
+			lcD->setCursor(0,3);
+			dtostrf(Tmp, 7, 1,a);
+			dtostrf(Tmp_max, 2, 1,b);
+			sprintf(SS_buff,"Temp:%s/%s%cC",a,b,(char)223);
+			lcD->print(SS_buff);
+			break;
+		case 7:
+			lcD->setCursor(0,0);
+		    lcD->print(F("POWER %           "));//print  type of control
+			lcD->setCursor(0,1);
+			sprintf(SS_buff,"Actual:%10irpm",(long)rpm_a);
+			lcD->print(SS_buff);
+			lcD->setCursor(0,2);
+			sprintf(SS_buff,"Duty:%12i%%",(int)rpm_t);
+			lcD->print(SS_buff);
+			lcD->setCursor(0,3);
+			dtostrf(Tmp, 7, 1,a);
+			dtostrf(Tmp_max, 2, 1,b);
+			sprintf(SS_buff,"Temp:%s/%s%cC",a,b,(char)223);
+			lcD->print(SS_buff);
+			break;
+		}
+	}
+}
 
 
 void init_array(int arr[],int size,int res){

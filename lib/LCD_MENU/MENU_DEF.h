@@ -23,11 +23,9 @@
 
 ////////////////////////////////////////////////////////////////
 //VARIABLES
-uint16_t screen_saver_delay=10000;
-uint8_t screen_saver_refresh=100;
-// bool menu_flag=1;
-unsigned long t_last_button_input=0;
+uint16_t screen_saver_delay=2500;// time to popup the screensaver (02)
 
+unsigned long t_last_button_input=0;
 char MENU_Header[21];
 uint8_t PICKER_mode;
 char PICKER_name[11];
@@ -98,7 +96,7 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
             const uint8_t PROGMEM M12_PICKER_mode_0 = 3;
             const char PROGMEM M12_PICKER_name_0[]  = "P:"; 
-            const uint8_t PROGMEM M12_PICKER_decimals_0 = 4; 
+            const uint8_t PROGMEM M12_PICKER_decimals_0 = 2; 
             const char PROGMEM M12_PICKER_unit_0[]  = ""; 
             const float PROGMEM M12_PICKER_min_value_0 = 0; 
             const float PROGMEM M12_PICKER_max_value_0 = 100; 
@@ -109,7 +107,7 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
             const uint8_t PROGMEM M12_PICKER_mode_1 = 3;
             const char PROGMEM M12_PICKER_name_1[]  = "D:"; 
-            const uint8_t PROGMEM M12_PICKER_decimals_1 = 4; 
+            const uint8_t PROGMEM M12_PICKER_decimals_1 = 1; 
             const char PROGMEM M12_PICKER_unit_1[]  = ""; 
             const float PROGMEM M12_PICKER_min_value_1 = 0; 
             const float PROGMEM M12_PICKER_max_value_1 = 100; 
@@ -120,7 +118,7 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
             const uint8_t PROGMEM M12_PICKER_mode_2 = 3;
             const char PROGMEM M12_PICKER_name_2[]  = "I:"; 
-            const uint8_t PROGMEM M12_PICKER_decimals_2 = 4; 
+            const uint8_t PROGMEM M12_PICKER_decimals_2 = 2; 
             const char PROGMEM M12_PICKER_unit_2[]  = ""; 
             const float PROGMEM M12_PICKER_min_value_2 = 0; 
             const float PROGMEM M12_PICKER_max_value_2 = 100; 
@@ -131,7 +129,7 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
             const uint8_t PROGMEM M12_PICKER_mode_3 = 3;
             const char PROGMEM M12_PICKER_name_3[]  = "T max:"; 
-            const uint8_t PROGMEM M12_PICKER_decimals_3 = 4; 
+            const uint8_t PROGMEM M12_PICKER_decimals_3 = 1; 
             const char PROGMEM M12_PICKER_unit_3[]  = ""; 
             const float PROGMEM M12_PICKER_min_value_3 = 0; 
             const float PROGMEM M12_PICKER_max_value_3 = 200; 
@@ -346,13 +344,3 @@ const uint8_t M_Picker_EEPROM_ADDR_table[] PROGMEM = {0,
 
 ////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////
-//SCREENSAVER FUNCTION
-
-
- void print_screen_saver(LiquidCrystal_I2C *LCD,float speed,float target,float temp){
-   //Print static strings
-   LCD->clear();
-   LCD->setCursor(0,0);
-	LCD->print("hola") ;
-}
