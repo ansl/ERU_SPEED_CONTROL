@@ -19,8 +19,9 @@ PWM_READ::PWM_READ(long rng){
     EICRA |= (1 << ISC11);      // Trigger INT1 on falling edge
     _range=rng;
 }
-long PWM_READ::duty(){
-        return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
+float PWM_READ::duty(){
+        // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
+        return (100.0*(CYCLE_END-DUTY_START)/CYCLE_END);
 }
 unsigned long PWM_READ::test(){
         return DUTY_START;
@@ -36,7 +37,7 @@ void PWM_READ::PWM_ISR(){
                     CYCLE_END=t_abs-t_abs_old;
                     EICRA |= (1 << ISC10);//cambia la deteccion de flanco a rising edge
                 }
-                else if ((EICRA>>2) & 0x01==1){ 
+                else if (((EICRA>>2) & 0x01)==1){ 
  
                     //DETECTA SUBIA lee el duty y cambia la deteccion a falling edge
                     DUTY_START=(timer0_overflow_count*256+TCNT0)-t_abs;//lee dode se produce la

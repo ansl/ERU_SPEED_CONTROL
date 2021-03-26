@@ -47,12 +47,12 @@ const char PROGMEM null[]="";
 const char PROGMEM M1_HEADER[]  = "ERU";
 
     const uint8_t PROGMEM M1_PICKER_mode_0 = 2;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-    const char PROGMEM M1_PICKER_name_0[]  = "LIGHT"; 
-    const char PROGMEM M1_PICKER_state_string0_0[]  = "OFF"; 
-    const char PROGMEM M1_PICKER_state_string1_0[]  = "ON"; 
+    const char PROGMEM M1_PICKER_name_0[]  = "Light"; 
+    const char PROGMEM M1_PICKER_state_string0_0[]  = "off"; 
+    const char PROGMEM M1_PICKER_state_string1_0[]  = "on"; 
     
     const uint8_t PROGMEM M1_PICKER_mode_1 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-    const char PROGMEM M1_PICKER_name_1[]  = "SPINDLE SETUP";
+    const char PROGMEM M1_PICKER_name_1[]  = "Spindle setup";
 
            const char PROGMEM M11_HEADER[]  = "SPINDLE CONTROL"; // "String 0" etc are strings to store - change to suit.
                 const uint8_t PROGMEM M11_PICKER_mode_0 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
@@ -69,7 +69,7 @@ const char PROGMEM M1_HEADER[]  = "ERU";
                         const uint16_t PROGMEM M110_PICKER_tblink_0 = 300;
 
                 const uint8_t PROGMEM M11_PICKER_mode_1 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-                const char PROGMEM M11_PICKER_name_1[]  = "EXT PWM"; 
+                const char PROGMEM M11_PICKER_name_1[]  = "Ext pwm"; 
                     const char PROGMEM M111_HEADER[]  = "ERU PWM SOURCE:";
                         const uint8_t PROGMEM M111_PICKER_mode_0 = 2;
                         const char PROGMEM M111_PICKER_name_0[]  = "Link:"; 
@@ -77,8 +77,8 @@ const char PROGMEM M1_HEADER[]  = "ERU";
                         const char PROGMEM M111_PICKER_state_string1_0[]  = "Connected"; 
 
                 const uint8_t PROGMEM M11_PICKER_mode_2 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-                const char PROGMEM M11_PICKER_name_2[]  = "PWR %"; 
-                    const char PROGMEM M112_HEADER[]  = "Power % ";
+                const char PROGMEM M11_PICKER_name_2[]  = "Power %"; 
+                    const char PROGMEM M112_HEADER[]  = "POWER % ";
                         const uint8_t PROGMEM M112_PICKER_mode_0 = 3;
                         const char PROGMEM M112_PICKER_name_0[]  = "Duty:"; 
                         const uint8_t PROGMEM M112_PICKER_decimals_0 = 0; 
@@ -91,7 +91,7 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
 
     const uint8_t PROGMEM M1_PICKER_mode_2 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-    const char PROGMEM M1_PICKER_name_2[]  = "CONFIG"; 
+    const char PROGMEM M1_PICKER_name_2[]  = "Configuration"; 
         const char PROGMEM M12_HEADER[]  = "CONFIGURATION";
 
             const uint8_t PROGMEM M12_PICKER_mode_0 = 3;
@@ -139,9 +139,9 @@ const char PROGMEM M1_HEADER[]  = "ERU";
             const uint8_t PROGMEM M12_PICKER_EEPROM_ADDR_3 = 13;        
 
     const uint8_t PROGMEM M1_PICKER_mode_3 = 2;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-    const char PROGMEM M1_PICKER_name_3[]  = "COOLANT"; 
-    const char PROGMEM M1_PICKER_state_string0_3[]  = "OFF"; 
-    const char PROGMEM M1_PICKER_state_string1_3[]  = "ON"; 
+    const char PROGMEM M1_PICKER_name_3[]  = "Coolant"; 
+    const char PROGMEM M1_PICKER_state_string0_3[]  = "off"; 
+    const char PROGMEM M1_PICKER_state_string1_3[]  = "on"; 
 
 
 

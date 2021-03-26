@@ -75,6 +75,9 @@ int maxPWM=4000;
 int minPWM=1900;
 PID PID1(0.01, 20 ,0, 1800, minPWM, maxPWM, 50);
 
+// PWM input pin 3 #################################################
+PWM_READ ERU_PWM(10);
+
 // //MENU#############################################################
 #ifdef LCD_ACTIVE
 	Menu M1(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
@@ -84,11 +87,12 @@ PID PID1(0.01, 20 ,0, 1800, minPWM, maxPWM, 50);
 			Menu M112(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 		Menu M12(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	
-#endif
-// //SCREEN SAVER#############################################################
-	Screen_saver SrcSvr(&lcd);
-//Variables#############################################################
 
+//SCREEN SAVER#############################################################
+	Screen_saver SrcSvr(&lcd);
+#endif
+
+//Global Variables#############################################################
 volatile int n=0;
 volatile int n0=0;
 volatile int nT=0;
@@ -104,6 +108,8 @@ float buff=255;
 float Tc=T*(buff+1);
 
 uint8_t power_mode=3; //0: no power mode 3:PID 5:EXT PWM 7:%Power
+
+float temp_spindle=0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -265,7 +271,6 @@ void setup() {
     //Inicializo el serial print
 	// Serial.println(F("ERU Project 4.0 Spindle control start..."));
 
-
 	#ifndef LCD_ACTIVE
 		pwm_target=1800;
 		v_target=2500;
@@ -279,31 +284,53 @@ void setup() {
 }
 
 void loop() {
-    #ifdef LCD_ACTIVE
 	
-   		Panel->check_button();
-		   if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
-				Panel->print_menu();
-
-				uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref;
-				if (_ref==3 || _ref==5|| _ref==7){
-					power_mode=_ref;
-				}
-		   }else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
-		   {
-			    SrcSvr.print(power_mode,23.7,M12.pick[3].value,v,M110.pick[0].value,M1.pick[0].state,M1.pick[3].state);
-		   }
-
+    #ifdef LCD_ACTIVE
+		Panel->check_button();
+		temp_spindle = (analogRead(T_SENS)*5/1024 - 0.5) * 100;
 		switch (power_mode){
 			case 3:
-				PID1.Param(M12.pick[0].value,M12.pick[1].value,M12.pick[2].value);
-				pwm_target=PID1.Evaluate(v,M110.pick[0].value);
+				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
+						Panel->print_menu();
+						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
+						if (_ref==3 || _ref==5|| _ref==7){
+							power_mode=_ref;
+						}
+				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
+				{
+						SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M110.pick[0].value,M1.pick[0].state,M1.pick[3].state);
+				}
+
+				PID1.Param(M12.pick[0].value,M12.pick[1].value,M12.pick[2].value);//Update PID param
+				pwm_target=PID1.Evaluate(v,M110.pick[0].value); //evaluate PID and get target speed
 
 				break;
 			case 5:
+				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
+						Panel->print_menu();
+						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
+						if (_ref==3 || _ref==5|| _ref==7){
+							power_mode=_ref;
+						}
+				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
+				{
+						SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M111.pick[0].value,M1.pick[0].state,M1.pick[3].state);
+				}
 			 	//pwm_target=int(2200*M112.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
 			break;
 			case 7:
+				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
+						Panel->print_menu();
+						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
+						if (_ref==3 || _ref==5|| _ref==7){
+							power_mode=_ref;
+						}
+				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
+				{
+						SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M112.pick[0].value,M1.pick[0].state,M1.pick[3].state);
+			// Serial.print("Duty:");
+			// Serial.println(ERU_PWM.duty());
+				}
 			 	pwm_target=int(2200*M112.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
 			break;
 			}
