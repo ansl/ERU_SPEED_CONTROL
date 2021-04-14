@@ -12,7 +12,7 @@ PID::PID(float Kp, float Kd, float Ki, int OUT_INIT=0, int RNG_OUT_MIN=0, int RN
 
 
     _IN_old=0;
-    _OUT=OUT_INIT;
+    _OUT=RNG_OUT_MIN;
     _OUT_old=OUT_INIT;
 
     _delta_h=0;
@@ -70,5 +70,6 @@ long PID::Evaluate(long IN,long TARGET){
                 
     _IN_old=IN;
     _OUT_old=_OUT;
+    // Serial.println(_OUT);
     return _OUT;
 }

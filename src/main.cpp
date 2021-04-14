@@ -16,19 +16,19 @@
 //6:SET
 //7:UP
 //8:LEFT
-//9:LIGTH
+//9:
 //10:PWM ESC motor control
 //11:HOLD
 //12:FEED
 //13: board led
-//(A0)14:TEMP SENSOR
+//(A0)14:LIGTH
 //(A1)15:COOLANT
-//(A2)16:
-//(A3)17:
+//(A2)16:AUX1
+//(A3)17:AUX2
 //(A4)18:SDA DISPLAY
 //(A5)19:SCL DISPLAY
 //(A6)20:
-//(A7)21:
+//(A7)21:TEMP_SENS
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,9 +56,10 @@
 #define BACK 8
 #define HOLD 11
 #define FEED 12
-#define LIGHT 9
-#define T_SENS 14
+#define LIGHT 14
+//#define T_SENS A4
 #define COOLANT 15
+#define T_SENS A7 //OUTPUT AUX " repurposed to be feed instaad from A3 form A7"
 
 //LCD #############################################################
 #ifdef LCD_ACTIVE
@@ -168,7 +169,7 @@ void setup() {
 	//Inicializo el TOP/y el duty
 
 	OCR1A=40000;				//40000=20ms
-	OCR1B=1800;					//rango de 2000 a 4000 =>2000=1ms 4000=2ms
+	OCR1B=1900;					//rango de 2000 a 4000 =>2000=1ms 4000=2ms
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	//inicializo timer2/overflow
@@ -210,7 +211,10 @@ void setup() {
 			delay(2000);
 
 			lcd.clear();
-
+			v=0;
+			pwm_target=1800;
+			delay(5000);
+			Serial.println(F("INITIALIZING ESC....................."));
 		//Define Menu Pannel refferences
 		M1.menu_ref=0;
 		M11.menu_ref=1;
@@ -226,10 +230,13 @@ void setup() {
 				// SPINDLE CONTROL
 				M11.pick[0].ref=2;
 					M110.pick[0].ref=3;
+					M110.pick[0].value=0;
 				M11.pick[1].ref=4;
 					M111.pick[0].ref=5;
+					M111.pick[0].value=0;
 				M11.pick[2].ref=6;
 					M112.pick[0].ref=7;
+					M112.pick[0].value=0;
 			// CONFIG
 			M1.pick[2].ref=8;
 				M12.pick[0].ref=9;
@@ -267,6 +274,11 @@ void setup() {
 
 			Panel=&M1; //inicializo en panel principal
 			Panel->print_menu();
+
+			
+
+// Serial.println(pwm_target);
+
 	#endif
     //Inicializo el serial print
 	// Serial.println(F("ERU Project 4.0 Spindle control start..."));
@@ -287,7 +299,10 @@ void loop() {
 	
     #ifdef LCD_ACTIVE
 		Panel->check_button();
-		temp_spindle = (analogRead(T_SENS)*5/1024 - 0.5) * 100;
+		temp_spindle = (analogRead(T_SENS)*5.0/1024 - 0.5) * 100;
+		Serial.println(temp_spindle);
+		digitalWrite(LIGHT, M1.pick[0].state);
+		digitalWrite(COOLANT, M1.pick[3].state);
 		switch (power_mode){
 			case 3:
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
@@ -304,6 +319,9 @@ void loop() {
 				PID1.Param(M12.pick[0].value,M12.pick[1].value,M12.pick[2].value);//Update PID param
 				pwm_target=PID1.Evaluate(v,M110.pick[0].value); //evaluate PID and get target speed
 
+				//Serial.println(v,M110.pick[0].value);
+				// Serial.println(pwm_target);
+				// digitalWrite(LIGHT,HIGH);
 				break;
 			case 5:
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 

@@ -96,12 +96,12 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
             const uint8_t PROGMEM M12_PICKER_mode_0 = 3;
             const char PROGMEM M12_PICKER_name_0[]  = "P:"; 
-            const uint8_t PROGMEM M12_PICKER_decimals_0 = 2; 
+            const uint8_t PROGMEM M12_PICKER_decimals_0 = 4; 
             const char PROGMEM M12_PICKER_unit_0[]  = ""; 
             const float PROGMEM M12_PICKER_min_value_0 = 0; 
             const float PROGMEM M12_PICKER_max_value_0 = 100; 
-            const float PROGMEM M12_PICKER_inc_short_0 = 0.01; 
-            const float PROGMEM M12_PICKER_inc_long_0 = 0.1; 
+            const float PROGMEM M12_PICKER_inc_short_0 = 0.0001; 
+            const float PROGMEM M12_PICKER_inc_long_0 = 0.001; 
             const uint16_t PROGMEM M12_PICKER_tblink_0 = 300;
             const uint8_t PROGMEM M12_PICKER_EEPROM_ADDR_0 = 1;
 
