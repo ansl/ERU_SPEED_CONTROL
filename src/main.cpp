@@ -39,8 +39,9 @@
 #include <Wire.h>
 #include <PWM_READ.h>
 #include <LCD_MENU.h>
-#include <PID.h>
+//#include <PID.h>
 #include <EEPROM.h>
+#include <VescUart.h>
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //DEFINES
@@ -72,21 +73,22 @@
 #endif // !LCD_ACTIVE
 
 // PID #############################################################
-int maxPWM=4000;
-int minPWM=1900;
-PID PID1(0.01, 20 ,0, 1800, minPWM, maxPWM, 50);
+// int maxPWM=4000;
+// int minPWM=1900;
+// PID PID1(0.01, 20 ,0, 1800, minPWM, maxPWM, 50);
 
+// VESC_UART #############################################################
+VescUart Vesc_UART;
 // PWM input pin 3 #################################################
 PWM_READ ERU_PWM(10);
 
 // //MENU#############################################################
 #ifdef LCD_ACTIVE
 	Menu M1(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-		Menu M11(3,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+		Menu M11(2,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 			Menu M110(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 			Menu M111(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-			Menu M112(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-		Menu M12(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+		Menu M12(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	
 
 //SCREEN SAVER#############################################################
@@ -114,8 +116,9 @@ float temp_spindle=0;
 
 void setup() {
   // put your setup code here, to run once:
-    Serial.begin(9600);
-	
+    //Serial.begin(9600);
+	Vesc_UART.setSerialPort(&Serial);
+
   //////////////////////////////////////////////////////////////////////////////////////
 	//SET GPIO
 	pinMode(13, OUTPUT);		//pin de los leds
@@ -149,27 +152,20 @@ void setup() {
 	//INTERRUPTS
 	cli();
 	//inicializo timer1/pwm
-
-	TCCR1A=0;					//Inicializo los control registers del timer1 tanto el A como el B
-	TCCR1B=0;
-	TCCR1C=0;
-	TIMSK1=0;
-
-	TCCR1A |=(1 << COM1B1);		//defino la salida en el OCR1B en toogle mode #pin10
-
-	TCCR1A |=(1 << WGM10);		//WGMxx Lo define como fast pwm con el TOP en OCR1A /la comparaci?n en el OC1B
-	TCCR1A |=(1 << WGM11);
-	TCCR1B |=(1 << WGM12);
-	TCCR1B |=(1 << WGM13);
-
-	TCCR1B |=(1 << CS11);		//Seteo el prescaling en 8
-
-	TIMSK1 |=(1 << OCIE1B);
-
-	//Inicializo el TOP/y el duty
-
-	OCR1A=40000;				//40000=20ms
-	OCR1B=1900;					//rango de 2000 a 4000 =>2000=1ms 4000=2ms
+	// TCCR1A=0;					//Inicializo los control registers del timer1 tanto el A como el B
+	// TCCR1B=0;
+	// TCCR1C=0;
+	// TIMSK1=0;
+	// TCCR1A |=(1 << COM1B1);		//defino la salida en el OCR1B en toogle mode #pin10
+	// TCCR1A |=(1 << WGM10);		//WGMxx Lo define como fast pwm con el TOP en OCR1A /la comparaci?n en el OC1B
+	// TCCR1A |=(1 << WGM11);
+	// TCCR1B |=(1 << WGM12);
+	// TCCR1B |=(1 << WGM13);
+	// TCCR1B |=(1 << CS11);		//Seteo el prescaling en 8
+	// TIMSK1 |=(1 << OCIE1B);
+	// //Inicializo el TOP/y el duty
+	// OCR1A=40000;				//40000=20ms
+	// OCR1B=1900;					//rango de 2000 a 4000 =>2000=1ms 4000=2ms
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	//inicializo timer2/overflow
@@ -202,7 +198,7 @@ void setup() {
 			lcd.backlight();  //open the backlight
 
 			lcd.setCursor(0,0);
-			lcd.print(F("ERU Project 4.0"));
+			lcd.print(F("ERU Project 5.0"));
 			lcd.setCursor(0,1);
 			lcd.print(F("AntS 2021"));
 			lcd.createChar(0,next);
@@ -220,57 +216,40 @@ void setup() {
 		M11.menu_ref=1;
 		M110.menu_ref=2;
 		M111.menu_ref=3;
-		M112.menu_ref=4;
 		M12.menu_ref=5;
 		//ERU_MAIN
-			// LIGHT
-			M1.pick[0].ref=0;
 			// SPINDLE
-			M1.pick[1].ref=1;
+			M1.pick[0].ref=0;
 				// SPINDLE CONTROL
-				M11.pick[0].ref=2;
-					M110.pick[0].ref=3;
+				M11.pick[0].ref=1;
+					M110.pick[0].ref=2;
 					M110.pick[0].value=0;
-				M11.pick[1].ref=4;
-					M111.pick[0].ref=5;
+				M11.pick[1].ref=3;
+					M111.pick[0].ref=4;
 					M111.pick[0].value=0;
-				M11.pick[2].ref=6;
-					M112.pick[0].ref=7;
-					M112.pick[0].value=0;
+			// LIGHT
+			M1.pick[1].ref=5;
+			// COOLANT
+			M1.pick[2].ref=6;
 			// CONFIG
-			M1.pick[2].ref=8;
+			M1.pick[3].ref=7;
+				// TMAX
 				M12.pick[0].ref=9;
 				M12.pick[0].EEPROM_ACTIVE=1;
 				M12.pick[0].get_val_EEPROM();
-				M12.pick[1].ref=10;
-				M12.pick[1].EEPROM_ACTIVE=1;
-				M12.pick[1].get_val_EEPROM();
-				M12.pick[2].ref=11;
-				M12.pick[2].EEPROM_ACTIVE=1;
-				M12.pick[2].get_val_EEPROM();
-				M12.pick[3].ref=12;
-				M12.pick[3].EEPROM_ACTIVE=1;
-				M12.pick[3].get_val_EEPROM();
-			// COOLANT
-			M1.pick[3].ref=13;
+
 
 		//Define menu interconnections
-			M1.pick[1].child=&M11;
+			M1.pick[0].child=&M11;
 				M11.pick[0].child=&M110;
 				M11.pick[1].child=&M111;
-				M11.pick[2].child=&M112;
-		    M1.pick[2].child=&M12;
+		    M1.pick[3].child=&M12;
 
 			M11.pick[0].parent=&M1;
-			M11.pick[1].parent=&M1;
-			M11.pick[2].parent=&M1;
 				M110.pick[0].parent=&M11;
 				M111.pick[0].parent=&M11;
-				M112.pick[0].parent=&M11;
 			M12.pick[0].parent=&M1;
-			M12.pick[1].parent=&M1;
-			M12.pick[2].parent=&M1;
-			M12.pick[3].parent=&M1;
+
 
 			Panel=&M1; //inicializo en panel principal
 			Panel->print_menu();
@@ -300,9 +279,9 @@ void loop() {
     #ifdef LCD_ACTIVE
 		Panel->check_button();
 		temp_spindle = (analogRead(T_SENS)*5.0/1024 - 0.5) * 100;
-		Serial.println(temp_spindle);
-		digitalWrite(LIGHT, M1.pick[0].state);
-		digitalWrite(COOLANT, M1.pick[3].state);
+		// Serial.println(temp_spindle);
+		digitalWrite(LIGHT, M1.pick[1].state);
+		digitalWrite(COOLANT, M1.pick[2].state);
 		switch (power_mode){
 			case 3:
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
@@ -315,13 +294,7 @@ void loop() {
 				{
 						SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M110.pick[0].value,M1.pick[0].state,M1.pick[3].state);
 				}
-
-				PID1.Param(M12.pick[0].value,M12.pick[1].value,M12.pick[2].value);//Update PID param
-				pwm_target=PID1.Evaluate(v,M110.pick[0].value); //evaluate PID and get target speed
-
-				//Serial.println(v,M110.pick[0].value);
-				// Serial.println(pwm_target);
-				// digitalWrite(LIGHT,HIGH);
+				Vesc_UART.setRPM(M110.pick[0].value);
 				break;
 			case 5:
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
@@ -334,32 +307,11 @@ void loop() {
 				{
 						SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M111.pick[0].value,M1.pick[0].state,M1.pick[3].state);
 				}
-			 	//pwm_target=int(2200*M112.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
-			break;
-			case 7:
-				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
-						Panel->print_menu();
-						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
-						if (_ref==3 || _ref==5|| _ref==7){
-							power_mode=_ref;
-						}
-				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
-				{
-						SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M112.pick[0].value,M1.pick[0].state,M1.pick[3].state);
-			// Serial.print("Duty:");
-			// Serial.println(ERU_PWM.duty());
-				}
-			 	pwm_target=int(2200*M112.pick[0].value/100)+1900; // % of throtle from 1900 -> 4100 || 1->2ms
+				//Vesc_UART.setRPM(XXXX);
+
 			break;
 			}
 
-		// Serial.print("T:");
-		// Serial.print(M110.pick[0].value);
-		// Serial.print("rpm V:");
-		// Serial.print(v);
-		// Serial.print("rpm PWM:");
-		// Serial.print(pwm_target);
-		// Serial.println("");
 	#endif
 	#ifndef LCD_ACTIVE
 		pwm_target=PID1.Evaluate(v,v_target);
@@ -393,10 +345,6 @@ ISR(INT0_vect) //interrupt que detecta cada pulso del encoder magnetico
 		SREG = oldSREG;
 	}
 
-ISR(TIMER1_COMPB_vect)//Timer usado para definir el duti cycle del PWM
-	{
-		OCR1B=pwm_target;
-	};
 
 ISR(TIMER2_OVF_vect) //TImer por overflow usado para calcular en cada periodo de tiempo definido por el OVF el numero de pulsos dado por el encoder magnetico
 	{
@@ -412,3 +360,8 @@ ISR(TIMER2_OVF_vect) //TImer por overflow usado para calcular en cada periodo de
 			n=0;
 		}
 	};
+
+// ISR(TIMER1_COMPB_vect)//Timer usado para definir el duti cycle del PWM
+// 	{
+// 		OCR1B=pwm_target;
+// 	};

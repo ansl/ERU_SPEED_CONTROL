@@ -728,21 +728,7 @@ char b[4];
 			sprintf(SS_buff,"Temp:%s/%s%cC",a,b,(char)223);
 			lcD->print(SS_buff);
 			break;
-		case 7:
-			lcD->setCursor(0,0);
-		    lcD->print(F("POWER %           "));//print  type of control
-			lcD->setCursor(0,1);
-			sprintf(SS_buff,"Actual:%10irpm",(long)rpm_a);
-			lcD->print(SS_buff);
-			lcD->setCursor(0,2);
-			sprintf(SS_buff,"Duty:%12i%%",(int)rpm_t);
-			lcD->print(SS_buff);
-			lcD->setCursor(0,3);
-			dtostrf(Tmp, 7, 1,a);
-			dtostrf(Tmp_max, 2, 1,b);
-			sprintf(SS_buff,"Temp:%s/%s%cC",a,b,(char)223);
-			lcD->print(SS_buff);
-			break;
+
 		}
 	}
 }
