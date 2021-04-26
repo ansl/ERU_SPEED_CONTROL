@@ -28,7 +28,7 @@ uint16_t screen_saver_delay=2500;// time to popup the screensaver (02)
 unsigned long t_last_button_input=0;
 char MENU_Header[21];
 uint8_t PICKER_mode;
-char PICKER_name[11];
+char PICKER_name[21];
 char PICKER_state_string0[21];
 char PICKER_state_string1[21];
 uint8_t PICKER_decimals;
@@ -49,7 +49,7 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
     
     const uint8_t PROGMEM M1_PICKER_mode_0 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-    const char PROGMEM M1_PICKER_name_0[]  = "Spindle setup";
+    const char PROGMEM M1_PICKER_name_0[]  = "Spindle control";
 
            const char PROGMEM M11_HEADER[]  = "SPINDLE CONTROL"; // "String 0" etc are strings to store - change to suit.
                 const uint8_t PROGMEM M11_PICKER_mode_0 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
@@ -84,9 +84,8 @@ const char PROGMEM M1_HEADER[]  = "ERU";
     const char PROGMEM M1_PICKER_state_string1_2[]  = "on"; 
 
     const uint8_t PROGMEM M1_PICKER_mode_3 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-    const char PROGMEM M1_PICKER_name_3[]  = "Configuration"; 
+    const char PROGMEM M1_PICKER_name_3[]  = "Config"; 
         const char PROGMEM M12_HEADER[]  = "CONFIGURATION";     
-
             const uint8_t PROGMEM M12_PICKER_mode_0 = 3;
             const char PROGMEM M12_PICKER_name_0[]  = "T max:"; 
             const uint8_t PROGMEM M12_PICKER_decimals_0 = 1; 

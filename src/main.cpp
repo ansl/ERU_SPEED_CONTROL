@@ -110,14 +110,14 @@ float T=1024 / 16000000.0;//0.000064;	//6.4e-5s
 float buff=255;
 float Tc=T*(buff+1);
 
-uint8_t power_mode=3; //0: no power mode 3:PID 5:EXT PWM 7:%Power
+uint8_t power_mode=2; //0: no power mode 3:PID 5:EXT PWM 7:%Power
 
 float temp_spindle=0;
 
 void setup() {
   // put your setup code here, to run once:
-    //Serial.begin(9600);
-	Vesc_UART.setSerialPort(&Serial);
+  // Serial.begin(9600);
+	//Vesc_UART.setSerialPort(&Serial);
 
   //////////////////////////////////////////////////////////////////////////////////////
 	//SET GPIO
@@ -204,19 +204,19 @@ void setup() {
 			lcd.createChar(0,next);
 			lcd.createChar(1,lght);
 			lcd.createChar(2,cool);
-			delay(2000);
+			delay(500);
 
 			lcd.clear();
 			v=0;
 			pwm_target=1800;
-			delay(5000);
-			Serial.println(F("INITIALIZING ESC....................."));
+			delay(1000);
+			//Serial.println(F("INITIALIZING....................."));
 		//Define Menu Pannel refferences
 		M1.menu_ref=0;
 		M11.menu_ref=1;
 		M110.menu_ref=2;
 		M111.menu_ref=3;
-		M12.menu_ref=5;
+		M12.menu_ref=4;
 		//ERU_MAIN
 			// SPINDLE
 			M1.pick[0].ref=0;
@@ -234,7 +234,7 @@ void setup() {
 			// CONFIG
 			M1.pick[3].ref=7;
 				// TMAX
-				M12.pick[0].ref=9;
+				M12.pick[0].ref=8;
 				M12.pick[0].EEPROM_ACTIVE=1;
 				M12.pick[0].get_val_EEPROM();
 
@@ -243,11 +243,13 @@ void setup() {
 			M1.pick[0].child=&M11;
 				M11.pick[0].child=&M110;
 				M11.pick[1].child=&M111;
-		    M1.pick[3].child=&M12;
+			M1.pick[3].child=&M12;
 
 			M11.pick[0].parent=&M1;
 				M110.pick[0].parent=&M11;
+			M11.pick[1].parent=&M1;
 				M111.pick[0].parent=&M11;
+			
 			M12.pick[0].parent=&M1;
 
 
@@ -283,29 +285,31 @@ void loop() {
 		digitalWrite(LIGHT, M1.pick[1].state);
 		digitalWrite(COOLANT, M1.pick[2].state);
 		switch (power_mode){
-			case 3:
+			case 2:
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
 						Panel->print_menu();
 						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
-						if (_ref==3 || _ref==5|| _ref==7){
+						if (_ref==2 || _ref==4){
 							power_mode=_ref;
 						}
 				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
 				{
-						SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M110.pick[0].value,M1.pick[0].state,M1.pick[3].state);
+						//uint8_t power_mode,float rpm_t,float rpm_a,float Vin,float Cin,float Tmft,float Pow,float Cm,float Tm,bool light_state,bool cool_state
+						//Vesc_UART.getVescValues();
+						SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,10.0,100.0,Vesc_UART.data.avgMotorCurrent,20.0,M1.pick[1].state,M1.pick[2].state);
 				}
-				Vesc_UART.setRPM(M110.pick[0].value);
+				// Vesc_UART.setRPM(M110.pick[0].value);
 				break;
-			case 5:
+			case 4:
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
 						Panel->print_menu();
 						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
-						if (_ref==3 || _ref==5|| _ref==7){
+						if (_ref==2 || _ref==4){
 							power_mode=_ref;
 						}
 				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
 				{
-						SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M111.pick[0].value,M1.pick[0].state,M1.pick[3].state);
+						//SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M111.pick[0].value,M1.pick[0].state,M1.pick[3].state);
 				}
 				//Vesc_UART.setRPM(XXXX);
 

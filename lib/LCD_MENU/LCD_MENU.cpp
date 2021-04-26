@@ -240,8 +240,11 @@ void Menu::print_menu(){
 			}
 	 break;
 	 }
+
      for (int i=0;i<min(n_rows-header_lines,n_pickers);i++){
 		 strcpy_P(PICKER_name, (char*)pgm_read_word(&(M_Picker_name_table[pick[pick_pos[i]].ref])));
+		// Serial.println(PICKER_name);
+		
 		 lcD->setCursor(0,i+header_lines);
 		 lcD->print(PICKER_name);
 	 }
@@ -322,10 +325,12 @@ void Menu::check_button(void){
 		//button routines//
 		if (up_type==1){
 			if(setup_mode==0){
-				if(cursor_pos>0){					
+				if(cursor_pos>0){	
+// Serial.println("up");		
 					cursor_pos--;
 				}
 				else if (cursor_pos==0){
+// Serial.println("menu down");		
 					move_down(pick_pos, n_pickers);
 				}
 			}
@@ -342,6 +347,8 @@ void Menu::check_button(void){
 			}
 			// Serial.print("cursor_pos:");
 			// Serial.println(cursor_pos);
+			// Serial.println(pick_pos[cursor_pos]);
+			// Serial.println(pick[pick_pos[cursor_pos]].ref);
 			// print_menu();
 			Panel->event=1;
 		}
@@ -374,6 +381,8 @@ void Menu::check_button(void){
 			}
 			// Serial.print("cursor_pos:");
 			// Serial.println(cursor_pos);
+			// Serial.println(pick_pos[cursor_pos]);
+			// Serial.println(pick[pick_pos[cursor_pos]].ref);
 			// print_menu();
 			Panel->event=1;
 		}	
@@ -672,9 +681,8 @@ Screen_saver::Screen_saver(LiquidCrystal_I2C *LCD){
 		t_last=0;
 		lcD=LCD;
 }
-void Screen_saver::print(uint8_t power_mode,float Tmp,float Tmp_max,float rpm_a,float rpm_t,bool light_state,bool cool_state){
-char a[9];
-char b[4];
+void Screen_saver::print(uint8_t power_mode,float rpm_t,float rpm_a,float Vin,float Cin,float Tmft,float Pow,float Cm,float Tm,bool light_state,bool cool_state){
+
 	if((millis()-t_last)>=t_refresh){
 		t_last=millis();
 
@@ -695,37 +703,36 @@ char b[4];
 			lcD->print(F(" "));
 		}
 		switch (power_mode){
-		 case 3:
+		 case 2:
 		 	lcD->setCursor(0,0);
-		    lcD->print(F("PID               "));//print  type of control
+		    lcD->print(F("MANUAL           "));//print  type of control
 			lcD->setCursor(0,1);
-			sprintf(SS_buff,"Actual:%10irpm",(long)rpm_a);//tst);
+			sprintf(SS_buff,"T:%4irpm  A:%4irpm",(long)rpm_t,(long)rpm_a);//tst);
 						 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			lcD->setCursor(0,2);
-			sprintf(SS_buff,"Target:%10irpm",(long)rpm_t);
+			sprintf(SS_buff,"Vi:%2iV Ci:%2iA Tf:%2iC",(long)Vin,(long)Cin,(long)Tmft);
 						 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			lcD->setCursor(0,3);
-			dtostrf(Tmp, 8, 1,a);
-			dtostrf(Tmp_max, 2, 1,b);
-			sprintf(SS_buff,"Temp:%s/%s%cC",a,b,(char)223);
+			sprintf(SS_buff,"P:%3iW Cm:%2iA Tm:%2iC",(long)Pow,(long)Cm,(long)Tm);
 						 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			break;
-		case 5:
+		case 4:
 			lcD->setCursor(0,0);
-		    lcD->print(F("EXT PWM           "));//print  type of control
+		    lcD->print(F("EXT.CTRL          "));//print  type of control
 			lcD->setCursor(0,1);
-			sprintf(SS_buff,"Actual:%10irpm",(long)rpm_a);
+			sprintf(SS_buff,"T:%4irpm  A:%4rpm",(long)rpm_t,(long)rpm_a);//tst);
+						 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			lcD->setCursor(0,2);
-			sprintf(SS_buff,"Target:%10irpm",(long)rpm_t);
+			sprintf(SS_buff,"Vi:%2iV Ci:%2iA Tf:%2iC",(long)Vin,(long)Cin,(long)Tmft);
+						 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			lcD->setCursor(0,3);
-			dtostrf(Tmp, 7, 1,a);
-			dtostrf(Tmp_max, 2, 1,b);
-			sprintf(SS_buff,"Temp:%s/%s%cC",a,b,(char)223);
+			sprintf(SS_buff,"P:%3iW Cm:%2iA Tm:%2iC",(long)Pow,(long)Cm,(long)Tm);
+						 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			break;
 
