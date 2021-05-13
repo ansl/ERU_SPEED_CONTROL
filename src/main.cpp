@@ -116,8 +116,8 @@ float temp_spindle=0;
 
 void setup() {
   // put your setup code here, to run once:
-  // Serial.begin(9600);
-	//Vesc_UART.setSerialPort(&Serial);
+	Serial.begin(115200);
+	Vesc_UART.setSerialPort(&Serial);
 
   //////////////////////////////////////////////////////////////////////////////////////
 	//SET GPIO
@@ -295,10 +295,11 @@ void loop() {
 				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
 				{
 						//uint8_t power_mode,float rpm_t,float rpm_a,float Vin,float Cin,float Tmft,float Pow,float Cm,float Tm,bool light_state,bool cool_state
-						//Vesc_UART.getVescValues();
-						SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,10.0,100.0,Vesc_UART.data.avgMotorCurrent,20.0,M1.pick[1].state,M1.pick[2].state);
-				}
-				// Vesc_UART.setRPM(M110.pick[0].value);
+						Vesc_UART.getVescValues();
+						delay(100);
+						SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
+				}		
+				Vesc_UART.setRPM(M110.pick[0].value);
 				break;
 			case 4:
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
