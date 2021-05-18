@@ -722,7 +722,7 @@ void Screen_saver::print(uint8_t power_mode,long rpm_t,long rpm_a,long Vin,long 
 			break;
 		case 4:
 			lcD->setCursor(0,0);
-		    lcD->print(F("MANUAL           "));//print  type of control
+		    lcD->print(F("ERU AUTO         "));//print  type of control
 			lcD->setCursor(0,1);
 			sprintf(SS_buff,"SPEED:%5ld/%5ldrpm",rpm_a,rpm_t);//tst);
 			// 			 //Serial.println(SS_buff);

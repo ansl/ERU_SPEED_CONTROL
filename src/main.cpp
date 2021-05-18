@@ -84,11 +84,12 @@ PWM_READ ERU_PWM(10);
 
 // //MENU#############################################################
 #ifdef LCD_ACTIVE
-	Menu M1(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+	// Menu M1(4,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+	Menu M1(3,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 		Menu M11(2,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 			Menu M110(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 			Menu M111(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
-		Menu M12(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
+		// Menu M12(1,1,&lcd,UP,DOWN,SET,BACK,NEXT);
 	
 
 //SCREEN SAVER#############################################################
@@ -103,8 +104,8 @@ volatile int nP=0;
 volatile int p=7;
 
 volatile long v=0;
-volatile long v_target=0;
-volatile long pwm_target=0;
+// volatile long v_target=0;
+// volatile long pwm_target=0;
 
 float T=1024 / 16000000.0;//0.000064;	//6.4e-5s
 float buff=255;
@@ -112,7 +113,7 @@ float Tc=T*(buff+1);
 
 uint8_t power_mode=2; //0: no power mode 3:PID 5:EXT PWM 7:%Power
 
-float temp_spindle=0;
+// float temp_spindle=0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -208,15 +209,15 @@ void setup() {
 
 			lcd.clear();
 			v=0;
-			pwm_target=1800;
-			delay(1000);
+			// pwm_target=1800;
+			// delay(1000);
 			//Serial.println(F("INITIALIZING....................."));
 		//Define Menu Pannel refferences
 		M1.menu_ref=0;
 		M11.menu_ref=1;
 		M110.menu_ref=2;
 		M111.menu_ref=3;
-		M12.menu_ref=4;
+		// M12.menu_ref=4;
 		//ERU_MAIN
 			// SPINDLE
 			M1.pick[0].ref=0;
@@ -234,23 +235,23 @@ void setup() {
 			// CONFIG
 			M1.pick[3].ref=7;
 				// TMAX
-				M12.pick[0].ref=8;
-				M12.pick[0].EEPROM_ACTIVE=1;
-				M12.pick[0].get_val_EEPROM();
+				// M12.pick[0].ref=8;
+				// M12.pick[0].EEPROM_ACTIVE=1;
+				// M12.pick[0].get_val_EEPROM();
 
 
 		//Define menu interconnections
 			M1.pick[0].child=&M11;
 				M11.pick[0].child=&M110;
 				M11.pick[1].child=&M111;
-			M1.pick[3].child=&M12;
+			// M1.pick[3].child=&M12;
 
 			M11.pick[0].parent=&M1;
 				M110.pick[0].parent=&M11;
 			M11.pick[1].parent=&M1;
 				M111.pick[0].parent=&M11;
 			
-			M12.pick[0].parent=&M1;
+			// M12.pick[0].parent=&M1;
 
 
 			Panel=&M1; //inicializo en panel principal
@@ -280,7 +281,7 @@ void loop() {
 	
     #ifdef LCD_ACTIVE
 		Panel->check_button();
-		temp_spindle = (analogRead(T_SENS)*5.0/1024 - 0.5) * 100;
+		// temp_spindle = (analogRead(T_SENS)*5.0/1024 - 0.5) * 100;
 		// Serial.println(temp_spindle);
 		digitalWrite(LIGHT, M1.pick[1].state);
 		digitalWrite(COOLANT, M1.pick[2].state);
@@ -296,7 +297,6 @@ void loop() {
 				{
 						//uint8_t power_mode,float rpm_t,float rpm_a,float Vin,float Cin,float Tmft,float Pow,float Cm,float Tm,bool light_state,bool cool_state
 						Vesc_UART.getVescValues();
-						delay(100);
 						SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
 				}		
 				Vesc_UART.setRPM(M110.pick[0].value);
@@ -310,7 +310,9 @@ void loop() {
 						}
 				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
 				{
-						//SrcSvr.print(power_mode,temp_spindle,M12.pick[3].value,v,M111.pick[0].value,M1.pick[0].state,M1.pick[3].state);
+						Vesc_UART.getVescValues();
+						SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
+				
 				}
 				//Vesc_UART.setRPM(XXXX);
 
