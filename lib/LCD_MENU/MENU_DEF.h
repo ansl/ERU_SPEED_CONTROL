@@ -67,11 +67,11 @@ const char PROGMEM M1_HEADER[]  = "ERU";
 
                 const uint8_t PROGMEM M11_PICKER_mode_1 = 1;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
                 const char PROGMEM M11_PICKER_name_1[]  = "Ext pwm"; 
-                    const char PROGMEM M111_HEADER[]  = "ERU PWM SOURCE:";
+                    const char PROGMEM M111_HEADER[]  = "ERU CTRL";
                         const uint8_t PROGMEM M111_PICKER_mode_0 = 2;
                         const char PROGMEM M111_PICKER_name_0[]  = "Link:"; 
-                        const char PROGMEM M111_PICKER_state_string0_0[]  = "Disconnected"; 
-                        const char PROGMEM M111_PICKER_state_string1_0[]  = "Connected"; 
+                        const char PROGMEM M111_PICKER_state_string0_0[]  = "DOWN"; 
+                        const char PROGMEM M111_PICKER_state_string1_0[]  = "ONLINE"; 
 
     const uint8_t PROGMEM M1_PICKER_mode_1 = 2;//default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
     const char PROGMEM M1_PICKER_name_1[]  = "Light"; 

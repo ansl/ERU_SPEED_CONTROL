@@ -677,7 +677,7 @@ void Menu::reset_value(void){
 
 
 Screen_saver::Screen_saver(LiquidCrystal_I2C *LCD){
-		t_refresh=500;
+		t_refresh=200;
 		t_last=0;
 		lcD=LCD;
 }
@@ -708,33 +708,34 @@ void Screen_saver::print(uint8_t power_mode,long rpm_t,long rpm_a,long Vin,long 
 		 	lcD->setCursor(0,0);
 		    lcD->print(F("MANUAL           "));//print  type of control
 			lcD->setCursor(0,1);
-			sprintf(SS_buff,"T:%4lirpm  A:%4lirpm",rpm_t,rpm_a);//tst);
-						 //Serial.println(SS_buff);
+			sprintf(SS_buff,"SPEED:%5ld/%5ldrpm",rpm_a,rpm_t);//tst);
+			// 			 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			lcD->setCursor(0,2);
-			// sprintf(SS_buff,"Vi:%2iV Ci:%2iA Tf:%2iC",(long)Vin,(long)Cin,(long)Tmft);
-			sprintf(SS_buff,"I:%02i.%1iV/%02i.%1iA  %2i.%0iC",(int)Vin/10,(int)Vin%10,(int)Cin/100,(int)(Cin%100)/10,(int)Tmft/10,(int)Tmft%10);
+
+			sprintf(SS_buff,"I:%02d.%1dV/%02d.%1dA  %2d.%0dC",(int)Vin/10,(int)Vin%10,(int)Cin/100,(int)(Cin%100)/10,(int)Tmft/10,(int)Tmft%10);
 			lcD->print(SS_buff);
 			lcD->setCursor(0,3);
-			sprintf(SS_buff,"M:%02i.%1iV/%02i.%1iA  %2i.%0iC",(int)Vin/10,(int)Vin%10,(int)Cm/100,(int)(Cm%100)/10,(int)abs(Tm/10),(int)abs(Tm%10));
-						 //Serial.println(SS_buff);
+			sprintf(SS_buff,"M:%02d.%dV/%02d.%dA  %2d.%0dC",(int)Vin/10,(int)Vin%10,(int)Cm/100,(int)(Cm%100)/10,(int)abs(Tm/10),(int)abs(Tm%10));
+			// 			 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			break;
 		case 4:
 			lcD->setCursor(0,0);
-		    lcD->print(F("EXT.CTRL          "));//print  type of control
+		    lcD->print(F("MANUAL           "));//print  type of control
 			lcD->setCursor(0,1);
-			sprintf(SS_buff,"T:%4lirpm  A:%4lirpm",rpm_t,rpm_a);//tst);
-						 //Serial.println(SS_buff);
+			sprintf(SS_buff,"SPEED:%5ld/%5ldrpm",rpm_a,rpm_t);//tst);
+			// 			 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
 			lcD->setCursor(0,2);
-			sprintf(SS_buff,"Vi:%2liV Ci:%2liA Tf:%2liC",Vin,Cin,Tmft);
-						 //Serial.println(SS_buff);
+
+			sprintf(SS_buff,"I:%02d.%1dV/%02d.%1dA  %2d.%0dC",(int)Vin/10,(int)Vin%10,(int)Cin/100,(int)(Cin%100)/10,(int)Tmft/10,(int)Tmft%10);
 			lcD->print(SS_buff);
 			lcD->setCursor(0,3);
-			sprintf(SS_buff,"Cm:%2liA Tm:%2liC",Cm,Tm);
-						 //Serial.println(SS_buff);
+			sprintf(SS_buff,"M:%02d.%dV/%02d.%dA  %2d.%0dC",(int)Vin/10,(int)Vin%10,(int)Cm/100,(int)(Cm%100)/10,(int)abs(Tm/10),(int)abs(Tm%10));
+			// 			 //Serial.println(SS_buff);
 			lcD->print(SS_buff);
+			break;
 			break;
 
 		}
