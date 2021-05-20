@@ -40,7 +40,7 @@
 #include <PWM_READ.h>
 #include <LCD_MENU.h>
 //#include <PID.h>
-#include <EEPROM.h>
+// #include <EEPROM.h>
 #include <VescUart.h>
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -302,6 +302,9 @@ void loop() {
 				Vesc_UART.setRPM(M110.pick[0].value);
 				break;
 			case 4:
+			lcd.setCursor(10,0);
+			lcd.print((uint16_t)ERU_PWM.duty());
+
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
 						Panel->print_menu();
 						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
@@ -314,7 +317,7 @@ void loop() {
 						SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
 				
 				}
-				//Vesc_UART.setRPM(XXXX);
+				//Vesc_UART.setRPM();
 
 			break;
 			}

@@ -83,7 +83,7 @@ Picker::Picker(){
 	//   inc_long=10;
       blink=0;
 	//   tblink=300;
-	  enabled=0;
+	//   enabled=0;
       child=0;
 	  parent=0;
 	  EEPROM_ACTIVE=0;
@@ -446,7 +446,7 @@ void Menu::check_button(void){
 									if (pick[pick_pos[cursor_pos]].EEPROM_ACTIVE==1){
 										//EEPROM.put(pick[pick_pos[cursor_pos]].EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
 									}
-									pick[pick_pos[cursor_pos]].enabled=1;
+									// pick[pick_pos[cursor_pos]].enabled=1;
 									event=1;
 								}
 								break;		
@@ -525,7 +525,7 @@ void Menu::check_button(void){
 										EEPROM.put(PICKER_EEPROM_ADDR, pick[pick_pos[cursor_pos]].value);
 									}
 									//pick[pick_pos[cursor_pos]].new_value=0;
-									pick[pick_pos[cursor_pos]].enabled=1;
+									// pick[pick_pos[cursor_pos]].enabled=1;
 									event=1;
 								}
 								break;			
@@ -662,11 +662,11 @@ void Menu::check_button(void){
 		};
 	// Serial.println(event);
 };
-void Menu::disable_all(void){
-	for (uint8_t i=0;i<n_pickers;i++){
-		pick[i].enabled=0;
-	}
-}
+// void Menu::disable_all(void){
+// 	for (uint8_t i=0;i<n_pickers;i++){
+// 		pick[i].enabled=0;
+// 	}
+// }
 void Menu::reset_value(void){
 	for (uint8_t i=0;i<n_pickers;i++){
 		pick[i].value=0;

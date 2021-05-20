@@ -21,29 +21,29 @@ PWM_READ::PWM_READ(long rng){
 }
 float PWM_READ::duty(){
         // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
-        return (100.0*(CYCLE_END-DUTY_START)/CYCLE_END);
+        return (10000.0*(CYCLE_END-DUTY_START)/CYCLE_END);
 }
 unsigned long PWM_READ::test(){
-        return DUTY_START;
+        return CYCLE_END;
 
 }
 void PWM_READ::PWM_ISR(){
-                uint8_t oldSREG = SREG;
+                //  uint8_t oldSREG = SREG;
 
                 if (((EICRA>>2) & 0x01)==0){
                     t_abs_old=t_abs;
                     //DETECTA CAIDA lee el final del ciclo, resetea el timer y cambia la deteccion a rising edge/ calcula los periodos
-                    t_abs=(timer0_overflow_count*256+TCNT0); //timer0_overflow_count contabiliza cuantas veces se llega la overflow *256(tamaño del timer)
+                    t_abs= micros();//(timer0_overflow_count*256+TCNT0); //timer0_overflow_count contabiliza cuantas veces se llega la overflow *256(tamaño del timer)
                     CYCLE_END=t_abs-t_abs_old;
                     EICRA |= (1 << ISC10);//cambia la deteccion de flanco a rising edge
                 }
                 else if (((EICRA>>2) & 0x01)==1){ 
  
                     //DETECTA SUBIA lee el duty y cambia la deteccion a falling edge
-                    DUTY_START=(timer0_overflow_count*256+TCNT0)-t_abs;//lee dode se produce la
+                    DUTY_START=micros()-t_abs;//(timer0_overflow_count*256+TCNT0)-t_abs;//lee dode se produce la
                     EICRA ^= (1 << ISC10); //cambia la deteccion de flanco a falling edge
 
                 }
-                SREG = oldSREG;
+                //  SREG = oldSREG;
             
 }

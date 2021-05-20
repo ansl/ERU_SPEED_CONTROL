@@ -76,7 +76,7 @@ class Picker {
     //   String picker_name; //Picker name
       uint8_t pos;//position in the menu list
     //   uint8_t mode; //default type of picker =1 ; 1:next menu ->  2:on/off can be customized with the status_string 3:input variable value + unit(customizable)
-	  bool enabled; //flag to define if hte picker is enabled
+	//   bool enabled; //flag to define if hte picker is enabled
       bool state; //for picker type 2 0=OFF 1=0N
     //   String state_string0; //string for state =0
     //   String state_string1; //string for state =1
