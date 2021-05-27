@@ -54,7 +54,7 @@
 #define DOWN 5
 #define SET 6
 #define UP 7
-#define BACK 8
+#define BACK 13//8
 #define HOLD 11
 #define FEED 12
 #define LIGHT 14
@@ -80,7 +80,7 @@
 // VESC_UART #############################################################
 VescUart Vesc_UART;
 // PWM input pin 3 #################################################
-PWM_READ ERU_PWM(10);
+PWM_READ ERU_PWM;
 
 // //MENU#############################################################
 #ifdef LCD_ACTIVE
@@ -302,9 +302,7 @@ void loop() {
 				Vesc_UART.setRPM(M110.pick[0].value);
 				break;
 			case 4:
-			lcd.setCursor(10,0);
-			lcd.print((uint16_t)ERU_PWM.duty());
-
+			
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
 						Panel->print_menu();
 						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
@@ -314,7 +312,7 @@ void loop() {
 				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
 				{
 						Vesc_UART.getVescValues();
-						SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
+						SrcSvr.print(power_mode,ERU_PWM.duty(),Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
 				
 				}
 				//Vesc_UART.setRPM();

@@ -6,12 +6,14 @@
 
 class PWM_READ
 {	public:
-		PWM_READ(long rng);
-		float duty();
+		PWM_READ(void);
+		uint32_t duty();
+		float freq();
 		unsigned long test();
 		static void PWM_ISR();
+		
 
 	private:
-		long _range;
+
 
 };
