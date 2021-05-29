@@ -3,7 +3,6 @@
 #include <pins_arduino.h>
 #include <PWM_READ.h>
 
-<<<<<<< HEAD
         volatile uint16_t      peak_width         =0;
         volatile uint16_t      valley_width       =0;
         volatile uint16_t      tmr_overf          =0;
@@ -14,32 +13,6 @@ PWM_READ::PWM_READ(){
     
 }
 void PWM_READ::init(){
-=======
-//extern volatile unsigned long timer0_overflow_count;
-
-
-
-
-        
-
-ISR(INT1_vect){
-    PWM_READ::PWM_ISR();
-}
-
-ISR(TIMER1_OVF_vect) {
-   tmr_overf++;  
-}
-
-PWM_READ::PWM_READ(){
-        volatile uint16_t      peak_width         =0;
-        volatile uint16_t      valley_width       =0;
-        volatile uint16_t      tmr_overf          =0;
-        volatile float         Freq               =0;
-        volatile float         Duty               =0;
-        volatile uint8_t       Duty_256           =0;
-}
-PWM_READ::init(){
->>>>>>> 286411f95a8d4830d1317a4b3467cc69569a3c70
     //using Timer 1 
          //inicializo timer1/normal mode
              TCCR1A=0;					//Inicializo los control registers del timer1 tanto el A como el B
@@ -57,7 +30,6 @@ PWM_READ::init(){
              TIFR1 |=(1<<ICF1);                 // clear Flag 
 
 }
-<<<<<<< HEAD
 float PWM_READ::duty(){
         // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
            return 1.0*(peak_width)/(peak_width+valley_width);
@@ -67,17 +39,6 @@ uint8_t PWM_READ::duty_256(){
         // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
          
            return round(256.0*(peak_width)/(peak_width+valley_width));
-=======
-
-float PWM_READ::duty(){
-        // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
-           return Duty;
-
-}
-uint8_t PWM_READ::duty(){
-        // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
-           return Duty_256;
->>>>>>> 286411f95a8d4830d1317a4b3467cc69569a3c70
 
 }
 uint16_t PWM_READ::rpm(){
@@ -93,11 +54,7 @@ uint16_t PWM_READ::rpm(){
 }
 float PWM_READ::freq(){
         // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
-<<<<<<< HEAD
         return F_CPU/(peak_width+valley_width);
-=======
-        return Freq;
->>>>>>> 286411f95a8d4830d1317a4b3467cc69569a3c70
 }
 
 void PWM_READ::PWM_ISR(){
@@ -112,15 +69,9 @@ void PWM_READ::PWM_ISR(){
     }
     if(((TCCR1B>>ICES1)&1)==1 && curr_v>last_v){
       valley_width=curr_v-last_v;
-<<<<<<< HEAD
       // Freq=F_CPU/(peak_width+valley_width);
       // Duty=1.0*peak_width/(peak_width+valley_width);
       // Duty_256=round(255.0*peak_width/(peak_width+valley_width));
-=======
-      Freq=F_CPU/(peak_width+valley_width);
-      Duty=peak_width/(peak_width+valley_width);
-      Duty_256=round(peak_width/(peak_width+valley_width)*255);
->>>>>>> 286411f95a8d4830d1317a4b3467cc69569a3c70
     }
         
     TCCR1B ^= (1<<ICES1);  // invert flange detection
@@ -133,19 +84,6 @@ ISR(TIMER1_CAPT_vect){
     PWM_READ::PWM_ISR();
 }
 
-<<<<<<< HEAD
 ISR(TIMER1_OVF_vect) {
    tmr_overf++;  
  }
-=======
-//   if(TCCR4B &  (1<<ICES4)) {  // lo-hi
-//     TCCR4B &= ~(1<<ICES4);    // input capture edge select (hi-lo) next 
-//     period_lo = accuml;
-//     f_capture = 1;       
-//     }
-//   else {  // hi-lo
-//     TCCR4B |= (1<<ICES4);    // input capture edge select (lo-hi) next 
-//     period_hi = accuml;
-//     }
-// }
->>>>>>> 286411f95a8d4830d1317a4b3467cc69569a3c70
