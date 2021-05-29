@@ -62,6 +62,10 @@
 #define COOLANT 15
 #define T_SENS A7 //OUTPUT AUX " repurposed to be feed instaad from A3 form A7"
 
+//Spindle Variables #############################################################
+#define SPINDLE_MAX_SPEED 60000/7;
+#define SPINDLE_MIN_SPEED 400;
+#define SPINDLE_DEAD_BAND 50;
 //LCD #############################################################
 #ifdef LCD_ACTIVE
 	#define max_char 20
@@ -128,6 +132,7 @@ void setup() {
 	//PWM ESC
 	pinMode(10,OUTPUT);// salida pwm
 
+
 	//ENCODER magnetico
 	pinMode(2, INPUT);			//Encoder magn?tico
 	digitalWrite(2, HIGH);
@@ -187,7 +192,7 @@ void setup() {
 	EICRA |= (1 << ISC01);		// Trigger INT0 on falling edge
 
 	// //GRBL PWM INPUT
-	// //PWM_READ GRBL_PWM(10000);
+	ERU_PWM.init();
 
 	sei();						// Enable global interrupts
 	
@@ -312,10 +317,12 @@ void loop() {
 				}else if (Panel->menu_flag==0)//PRINT SCREEN SAVER
 				{
 						Vesc_UART.getVescValues();
+
 						SrcSvr.print(power_mode,ERU_PWM.duty(),Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
 				
 				}
-				//Vesc_UART.setRPM();
+				if (M111.pick[0].state=1)
+					Vesc_UART.setRPM();
 
 			break;
 			}

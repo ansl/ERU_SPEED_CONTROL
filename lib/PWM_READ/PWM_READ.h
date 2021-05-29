@@ -7,11 +7,15 @@
 class PWM_READ
 {	public:
 		PWM_READ(void);
-		uint32_t duty();
+		void init();
+		float duty();
+		uint8_t duty_256();
+		uint16_t rpm();
 		float freq();
 		unsigned long test();
 		static void PWM_ISR();
-		
+		uint16_t MAX_SPINDLE;
+		uint8_t PWM_MIN;
 
 	private:
 
