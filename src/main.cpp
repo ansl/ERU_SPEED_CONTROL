@@ -10,13 +10,13 @@
 //0:&RX
 //1:&TX
 //2:Encoder magnetico input/interrupt
-//3:GRBL PWM INPUT
+//3:
 //4:RIGHT
 //5:DOWN
 //6:SET
 //7:UP
-//8:LEFT
-//9:
+//8:GRBL PWM INPUT
+//9:LEFT
 //10:PWM ESC motor control
 //11:HOLD
 //12:FEED
@@ -54,7 +54,8 @@
 #define DOWN 5
 #define SET 6
 #define UP 7
-#define BACK 13//8
+#define PWM_IN 8 //GRBL PWM INPUT
+#define BACK 9
 #define HOLD 11
 #define FEED 12
 #define LIGHT 14
@@ -138,8 +139,8 @@ void setup() {
 	digitalWrite(2, HIGH);
 	
 	//GRBL PWM INPUT
-	pinMode(3,INPUT);// salida pwm
-	digitalWrite(3, HIGH);
+	pinMode(PWM_IN,INPUT);// salida pwm
+	digitalWrite(PWM_IN, HIGH);
 	//CONTACTORS
 	pinMode(UP, INPUT_PULLUP);
 	pinMode(DOWN, INPUT_PULLUP);
@@ -318,11 +319,16 @@ void loop() {
 				{
 						Vesc_UART.getVescValues();
 
-						SrcSvr.print(power_mode,ERU_PWM.duty(),Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
+						SrcSvr.print(power_mode,ERU_PWM.rpm(),Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
 				
 				}
-				if (M111.pick[0].state=1)
-					Vesc_UART.setRPM();
+				if (M111.pick[0].state==1)
+				{
+				  		Vesc_UART.setRPM(ERU_PWM.rpm());
+				}
+				else {
+						Vesc_UART.setRPM(0);
+				}
 
 			break;
 			}
