@@ -308,7 +308,8 @@ void loop() {
 				Vesc_UART.setRPM(M110.pick[0].value);
 				break;
 			case 4:
-			
+				M111.pick[0].state=ERU_PWM.check_link(); // checks if the link is up and chages the picker state
+				
 				if (Panel->menu_flag==1 && Panel->event==1){//PRINT MENU 
 						Panel->print_menu();
 						uint8_t _ref=Panel->pick[Panel->pick_pos[Panel->cursor_pos]].ref; //check the picker ref to change the power_mode
