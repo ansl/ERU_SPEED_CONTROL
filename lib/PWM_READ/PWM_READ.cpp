@@ -30,31 +30,56 @@ void PWM_READ::init(){
              TIFR1 |=(1<<ICF1);                 // clear Flag 
 
 }
-float PWM_READ::duty(){
+bool PWM_READ::check_link(){
         // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
-           return 1.0*(peak_width)/(peak_width+valley_width);
+        if (peak_width+valley_width>0){
+             peak_width=0;
+             valley_width=0;
+             return 1;
+        }
+        else {
+             peak_width=0;
+             valley_width=0;
+             return 0;
+        }
+}
+float PWM_READ::duty(){
+        float duty=1.0*(peak_width)/(peak_width+valley_width);
+                //peak_width=0;
+                //valley_width=0;
+           return duty;
 
 }
 uint8_t PWM_READ::duty_256(){
         // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
-         
-           return round(256.0*(peak_width)/(peak_width+valley_width));
+        uint8_t duty_256=round(256.0*(peak_width)/(peak_width+valley_width));
+        //peak_width=0;
+        //valley_width=0;         
+        return duty_256;
 
 }
 uint16_t PWM_READ::rpm(){
         // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
           uint8_t duty_256=round(256.0*(peak_width)/(peak_width+valley_width));
+        
           if (duty_256>PWM_MIN){
+            //peak_width=0;
+            //valley_width=0;
             return round(1.0*duty_256*MAX_SPINDLE/256);
             //return MAX_SPINDLE;
           }
           else{
+            //peak_width=0;
+            //valley_width=0;
             return 0;
           }
 }
 float PWM_READ::freq(){
         // return 10*lroundf((_range/10)*abs(CYCLE_END-DUTY_START)/CYCLE_END);
-        return F_CPU/(peak_width+valley_width);
+        float freq=F_CPU/(peak_width+valley_width);
+        //peak_width=0;
+        //valley_width=0;
+        return freq
 }
 
 void PWM_READ::PWM_ISR(){
