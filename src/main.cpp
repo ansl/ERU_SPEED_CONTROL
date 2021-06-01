@@ -329,6 +329,7 @@ void loop() {
 				}
 				else {
 						Vesc_UART.setRPM(0);
+						
 				}
 
 			break;
