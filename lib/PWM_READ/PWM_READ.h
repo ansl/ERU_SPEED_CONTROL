@@ -8,6 +8,7 @@ class PWM_READ
 {	public:
 		PWM_READ(void);
 		void init();
+ 		bool check_link();
 		float duty();
 		uint8_t duty_256();
 		uint16_t rpm();
