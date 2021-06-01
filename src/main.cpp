@@ -303,7 +303,7 @@ void loop() {
 				{
 						//uint8_t power_mode,float rpm_t,float rpm_a,float Vin,float Cin,float Tmft,float Pow,float Cm,float Tm,bool light_state,bool cool_state
 						Vesc_UART.getVescValues();
-						SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
+						SrcSvr.print(power_mode,1,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
 				}		
 				Vesc_UART.setRPM(M110.pick[0].value);
 				break;
@@ -320,7 +320,7 @@ void loop() {
 				{
 						Vesc_UART.getVescValues();
 
-						SrcSvr.print(power_mode,ERU_PWM.rpm(),Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
+						SrcSvr.print(power_mode,M111.pick[0].state,ERU_PWM.rpm(),Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
 				
 				}
 				if (M111.pick[0].state==1)

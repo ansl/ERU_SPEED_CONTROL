@@ -79,7 +79,7 @@ float PWM_READ::freq(){
         float freq=F_CPU/(peak_width+valley_width);
         //peak_width=0;
         //valley_width=0;
-        return freq
+        return freq;
 }
 
 void PWM_READ::PWM_ISR(){

@@ -102,7 +102,7 @@ class Picker {
 class Screen_saver{
 	public:
 		Screen_saver(LiquidCrystal_I2C *LCD);
-		void print(uint8_t power_mode,long rpm_t,long rpm_a,long Vin,long Cin,long Tmft,long Cm,long Tm,bool light_state,bool cool_state);
+		void print(uint8_t power_mode,bool link_status,long rpm_t,long rpm_a,long Vin,long Cin,long Tmft,long Cm,long Tm,bool light_state,bool cool_state);
 		void Src_svr_print_dynamic(float Tmp,float Tmp_max,bool Tmp_alarm,float rmp_a,float rpm_t);
 		uint16_t t_refresh;
 		uint32_t t_last;

@@ -681,7 +681,7 @@ Screen_saver::Screen_saver(LiquidCrystal_I2C *LCD){
 		t_last=0;
 		lcD=LCD;
 }
-void Screen_saver::print(uint8_t power_mode,long rpm_t,long rpm_a,long Vin,long Cin,long Tmft,long Cm,long Tm,bool light_state,bool cool_state){
+void Screen_saver::print(uint8_t power_mode,bool link_status,long rpm_t,long rpm_a,long Vin,long Cin,long Tmft,long Cm,long Tm,bool light_state,bool cool_state){
 // SrcSvr.print(power_mode,M110.pick[0].value,Vesc_UART.data.rpm,Vesc_UART.data.inpVoltage,Vesc_UART.data.avgInputCurrent,Vesc_UART.data.tempFET,100.0,Vesc_UART.data.avgMotorCurrent,Vesc_UART.data.tempMotor,M1.pick[1].state,M1.pick[2].state);
 						
 	if((millis()-t_last)>=t_refresh){
@@ -722,7 +722,13 @@ void Screen_saver::print(uint8_t power_mode,long rpm_t,long rpm_a,long Vin,long 
 			break;
 		case 4:
 			lcD->setCursor(0,0);
-		    lcD->print(F("ERU AUTO         "));//print  type of control
+			if (link_status){
+				lcD->print(F("ERU LINK UP         "));//print  type of control
+			}
+		    else {
+				lcD->print(F("ERU LINK DOWN       "));//print  type of control
+			}
+			
 			lcD->setCursor(0,1);
 			sprintf(SS_buff,"SPEED:%5ld/%5ldrpm",rpm_a,rpm_t);//tst);
 			// 			 //Serial.println(SS_buff);
